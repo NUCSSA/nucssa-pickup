@@ -1,0 +1,32 @@
+{
+  "name": "nucssa-pickup",
+  "version": "1.0.0",
+  "description": "NUCSSA接机服务插件，连通微信公众号",
+  "scripts": {
+    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "build": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "start": "npm run development -- --watch",
+    "compile": "composer dump-autoload -o"
+  },
+  "author": "NUCSSA IT",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-redux": "^7.1.0",
+    "react-router": "^5.0.1",
+    "react-router-dom": "^5.0.1",
+    "redux": "^4.0.4"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.5.0",
+    "@babel/preset-react": "^7.0.0",
+    "cross-env": "^5.2.0",
+    "laravel-mix": "^4.1.2",
+    "redux-devtools-extension": "^2.13.8",
+    "sass": "^1.22.4",
+    "sass-loader": "^7.1.0"
+  }
+}

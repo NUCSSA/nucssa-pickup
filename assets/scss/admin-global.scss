@@ -1,0 +1,13 @@
+// import nucssa-icon-font
+@import url(https://fonts.nucssa.org/nucssa-icon-font/style.css);
+#adminmenu{
+  .toplevel_page_admin-menu-page-nucssa-pickup {
+    div.wp-menu-image::before {
+      font-family: 'nucssa-icon-font';
+      font-size: 0.9rem;
+      content: "\e902";
+      vertical-align: middle;
+      line-height: 1.1rem;
+    }
+  }
+}
