@@ -13,6 +13,10 @@ class AdminScripts
   {
     // self::loadScripts($hook);
     self::loadStyles($hook);
+
+
+    // load browserSync script for development
+    self::enableBrowserSyncOnDebugMode();
   }
 
   private static function loadScripts($hook)
@@ -37,8 +41,8 @@ class AdminScripts
     // NUCSSA Core Plugin Page only Styles
     if ($hook === 'toplevel_page_admin-menu-page-nucssa-pickup') {
       wp_enqueue_style(
-        'nucssa_pickup_admin_plugin_page_style',
-        NUCSSA_PICKUP_DIR_URL . 'public/css/admin-plugin-page.css',
+        'nucssa_pickup_admin_page_style',
+        NUCSSA_PICKUP_DIR_URL . 'public/css/admin-pickup-page.css',
         [], // deps
         false,   // version
         'all'    // media
@@ -53,5 +57,13 @@ class AdminScripts
       false,   // version
       'all'    // media
     );
+  }
+
+  private static function enableBrowserSyncOnDebugMode() {
+    if (WP_DEBUG) {
+      add_action('admin_print_scripts', function(){
+        echo '<script async="" src="http://wp.localhost:3000/browser-sync/browser-sync-client.js"></script>';
+      });
+    }
   }
 }

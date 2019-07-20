@@ -12,11 +12,22 @@ const mix = require('laravel-mix');
  */
 
 /*  eslint-disable indent */
-mix.sass('assets/scss/admin-plugin-page.scss', 'public/css')
-   .sass('assets/scss/admin-global.scss', 'public/css')
-  //  .react('assets/js/admin.js', 'public/js')
-   .copyDirectory('assets/images/', 'public/images/')
-   .options({
-     processCssUrls: false,
-   })
-   .sourceMaps(false, 'eval-source-map');
+mix.sass('assets/scss/admin-pickup-page.scss', 'public/css')
+    .sass('assets/scss/pickup-page.scss', 'public/css')
+    .sass('assets/scss/admin-global.scss', 'public/css')
+    .scripts([
+      'node_modules/materialize-css/dist/js/materialize.min.js',
+      'assets/js/all.js'
+      ], 'public/js/all.js')
+    .react('assets/js/app.js', 'public/js')
+    .copyDirectory('assets/images/', 'public/images/')
+    .browserSync({
+      proxy: 'wp.localhost',
+      files: ['*.php', 'lib/', 'public/'],
+      open: false,
+      ghostMode: false,
+    })
+    .options({
+      processCssUrls: false,
+    })
+    .sourceMaps(false, 'eval-source-map');

@@ -1,0 +1,290 @@
+import React, { Component } from 'react';
+import api from '../../../utils/api';
+import UserInfoCard from './UserInfoCard';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { userEndpoint, orderEndpoint } from '../../../utils/constants';
+import moment from 'moment';
+import { datetimeDisplayFormat } from '../../../utils/utils';
+
+export default class HomePage extends Component {
+  constructor() {
+    super();
+    this.state = {
+      ownOrders: [],
+      user: {role: 'PASSENGER'},
+      managedOrders: [], // when this user is a driver
+    };
+
+    this.refPageActionsFAB = React.createRef();
+
+    this.ownOrdersSection = this.ownOrdersSection.bind(this);
+  }
+
+  async componentDidMount() {
+    // init Floating Action Button
+    M.FloatingActionButton.init(this.refPageActionsFAB.current);
+
+    try {
+      /**
+       * Fetch Data
+       * - role
+       * - orders of driver
+       * - user's own order
+       */
+      let resp = await axios.get(userEndpoint);
+      const user = resp.data.data.user;
+      console.log('user', user);
+      this.setState({user})
+
+      resp = await axios.get(`${orderEndpoint}&user_role=passenger`);
+      const ownOrders = resp.data.data;
+      // console.log('ownOrders', ownOrders);
+      this.setState({ownOrders});
+
+      if (user.role == 'DRIVER') {
+        resp = await axios.get(`${orderEndpoint}&user_role=driver`);
+        const managedOrders = resp.data.data;
+        console.log('managed orders', managedOrders);
+        this.setState({managedOrders});
+      }
+
+    } catch (error) {
+
+    }
+
+  }
+
+  componentDidUpdate() {
+    // init tooltips
+    M.Tooltip.init(document.querySelectorAll('.tooltipped'));
+
+  }
+
+  ownOrdersSection() {
+    console.log('own orders', this.state.ownOrders);
+    const driverHTML = (driver) => driver ?
+      <UserInfoCard
+        name={driver.name}
+        wechat={driver.wechat}
+        phone={driver.phone}
+        email={driver.email}
+      /> :
+      '等待司机接单';
+    const actionCellHTML = (order) => {
+      const orderDetailCard = `
+        <div class="card-content">
+          <table>
+            <tr>
+              <th><i class="material-icons">add_location</i></th>
+              <td>${order.drop_off_address}</td>
+            </tr>
+            <tr>
+              <th><i class="material-icons icon icon-paper-plane"/></th>
+              <td>${order.flight}</td>
+            </tr>
+            <tr>
+              <th><i class="material-icons">access_time</i></th>
+              <td>${moment(order.arrival_datetime).format(datetimeDisplayFormat)}</td>
+            </tr>
+            <tr>
+              <th><i class="material-icons">flag</i></th>
+              <td>航站楼 Terminal ${order.arrival_terminal}</td>
+            </tr>
+            <tr>
+              <th><i class="material-icons">message</i></th>
+              <td>${order.note}</td>
+            </tr>
+          </table>
+        </div>
+      `;
+      const deleteOrder = () => {
+        axios.delete(`${orderEndpoint}&order_id=${order.id}`)
+          .then((res) => {
+            console.log('resp', res);
+            this.setState({ownOrders: this.state.ownOrders.filter(o => o.id !== order.id)});
+          })
+          .catch(err => {
+            console.log('Error', err);
+          });
+      };
+
+      const editOrder = () => {
+        // console.log('order', order);
+        this.props.history.push({
+          pathname: '/edit-order',
+          state: {order},
+        });
+      };
+
+      return (
+        <>
+          <i className="material-icons small blue-text tooltipped" data-position="left" data-tooltip={orderDetailCard}>info</i>
+          <i className="material-icons small yellow-text text-darken-3" style={{cursor: 'pointer'}} onClick={editOrder}>edit</i>
+          <i className="material-icons small red-text text-lighten-1" style={{cursor: 'pointer'}} onClick={deleteOrder}>delete_forever</i>
+        </>
+      );
+    };
+    return (
+      <div className="section row">
+        <h5 className="center-align">我的订单状态</h5>
+        <table className="striped responsive-table">
+          <thead>
+            <tr>
+              <th>飞机到达时间</th>
+              <th>目的地址</th>
+              <th>接机司机</th>
+              <th>订单操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              this.state.ownOrders.map(order => (
+                <tr key={order.id}>
+                  <td>{moment(order.arrival_datetime).format(datetimeDisplayFormat)}</td>
+                  <td>{order.drop_off_address}</td>
+                  <td>{driverHTML(order.driver)}</td>
+                  <td>{actionCellHTML(order)}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  managedOrdersSection() {
+
+    const actionCellHTML = (order) => {
+      const dropOrder = () => {
+        axios.put(`${orderEndpoint}&driver_action=drop`, { order_id: order.id })
+          .then(res => {
+            this.setState({managedOrders: this.state.managedOrders.filter(o => o.id !== order.id)});
+          });
+      }
+      return (
+        <>
+          <a onClick={dropOrder} style={{cursor: 'pointer'}}>放弃订单</a>
+        </>
+      );
+    };
+    return (
+      <div className="section row">
+        <h5 className="center-align">我抢到的订单</h5>
+        <table className="striped">
+          <thead>
+            <tr>
+              <th>飞机到达时间</th>
+              <th>目的地址</th>
+              <th>联系方式</th>
+              <th>订单操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              this.state.managedOrders.map((order) => (
+                <tr key={order.passenger.email}>
+                  <td>{moment(order.arivalTime).format(datetimeDisplayFormat)}</td>
+                  <td>{order.drop_off_address}</td>
+                  <td>
+                    <UserInfoCard
+                      name={order.passenger.name}
+                      wechat={order.passenger.wechat}
+                      email={order.passenger.email}
+                      phone={order.passenger.phone}
+                    />
+                  </td>
+                  <td>{actionCellHTML(order)}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  pendingDriverMessage() {
+    return (
+      <div className="card-panel red lighten-3 white-text center-align">
+        <p>司机身份审核中，请耐心等待</p>
+        <p>我们会通过邮件通知您审核结果</p>
+        <p>审核通过后就可以看到抢单选项了</p>
+      </div>
+    );
+  }
+
+  autoDismissMessage() {
+    const refMessage = React.createRef();
+    setTimeout(() => {refMessage.current.remove();}, 3000);
+    return (<div ref={refMessage}>
+      {this.props.location.state.autoDismissMessage}
+    </div>);
+  }
+
+  actionsMenu() {
+    const actionPickOrders = <li>
+      <Link to="/pick-orders" className="btn-floating blue"><i className="material-icons">add_shopping_cart</i></Link>
+      <a className="btn-floating mobile-fab-tip">抢单</a>
+    </li>;
+    const actionApplyDriver = <li>
+      <Link to={{
+        pathname: "/driver-application",
+        state: {
+          user: this.state.user
+        }
+      }}
+      className="btn-floating green">
+        <i className="material-icons">directions_car</i>
+      </Link>
+      <a className="btn-floating mobile-fab-tip">申请成为司机</a>
+    </li>;
+    return (
+      <div className="fixed-action-btn" ref={this.refPageActionsFAB}>
+        <a className="btn-floating btn-large red"><i className="large material-icons">add</i></a>
+        <ul>
+          <li>
+            <Link to="/new-order" className="btn-floating red"><i className="large material-icons">add_circle</i></Link>
+            <a className="btn-floating mobile-fab-tip">创建接机订单</a>
+          </li>
+          { this.state.user.role == 'DRIVER' && actionPickOrders }
+          { this.state.user.role == 'PASSENGER' && actionApplyDriver }
+          <li>
+            <Link to="/edit-user-info" className="btn-floating yellow darken-1"><i className="material-icons">edit</i></Link>
+            <a className="btn-floating mobile-fab-tip">更新个人信息</a>
+          </li>
+        </ul>
+      </div>
+    );
+  }
+
+
+  /**
+   * Modules:
+   * - Shared Modules:
+    * - 我的订单状态 - Hide if is driver only ( driver and no orders )
+   *   - 等待司机接单
+   *   - 显示司机头像和姓名，鼠标悬停显示具体联系方式
+   * - Drivers Only:
+   *  - 我承接的订单列表
+   *  - 抢单
+   * - Actions Menu:
+   *   - 创建订单
+   *   - 更改个人信息
+   *   - 申请成为司机
+   *
+   */
+  render() {
+
+    return (
+      <main className="container">
+        { this.props.location.state && this.props.location.state.autoDismissMessage && this.autoDismissMessage() }
+        { this.state.user.role == 'PENDING_DRIVER' && this.pendingDriverMessage() }
+        { this.state.user.role == 'DRIVER' && this.managedOrdersSection() }
+        { this.ownOrdersSection() }
+        { this.actionsMenu() }
+      </main>
+    );
+  }
+}

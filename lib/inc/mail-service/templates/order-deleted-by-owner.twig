@@ -1,0 +1,24 @@
+{% extends "base/base.twig" %}
+{% block title %}订单删除通知{% endblock %}
+{% block message %}
+  <p>系统通知您 乘客删除了自己的订单，订单信息: </p>
+  <table style="border-top:#90caf9 solid 1px;border-bottom:#90caf9 solid 1px;">
+    <tr>
+      <th width="100px">乘客姓名</th>
+      <td>{{passenger.name}}</td>
+    </tr>
+    <tr>
+      <th width="100px">微信</th>
+      <td>{{passenger.wechat}}</td>
+    </tr>
+    <tr>
+      <th width="100px">到达时间</th>
+      <td>{{order.arrival_datetime}}</td>
+    </tr>
+    <tr>
+      <th width="100px">送达地址</th>
+      <td>{{order.drop_off_address}}</td>
+    </tr>
+  </table>
+  <p>感谢您的支持。</p>
+{% endblock %}

@@ -1,0 +1,195 @@
+import React, { Component } from 'react';
+import path from 'path';
+import axios from 'axios';
+import { orderEndpoint, nonce } from '../../../utils/constants';
+import moment from 'moment';
+import { datetimeSQLFormat } from '../../../utils/utils';
+
+export default class CreateEditOrderPage extends Component {
+  constructor(props) {
+    super(props);
+
+    this.refAddress = React.createRef();
+    this.refFlightNum = React.createRef();
+    this.refArrivalDate = React.createRef();
+    this.refArrivalTime = React.createRef();
+    this.refTerminal = React.createRef();
+    this.refNote = React.createRef();
+    this.refMessage = React.createRef();
+    this.refCompanionCount = React.createRef();
+    this.refUrgentContact = React.createRef();
+
+    this.submitHandler = this.submitHandler.bind(this);
+    this.goHome = this.goHome.bind(this);
+
+    if (this.props.location.state && this.props.location.state.order) {
+      this.isEditing = true;
+      this.order = this.props.location.state.order;
+      console.log('order', this.order);
+    } else {
+      this.isEditing = false;
+    }
+  }
+
+  componentDidMount() {
+    const datepickerInstance = M.Datepicker.init(this.refArrivalDate.current, {
+      defaultDate: this.isEditing ? new Date(this.order.arrival_datetime) : null,
+      setDefaultDate: this.isEditing
+    });
+    const timepickerInstance = M.Timepicker.init(this.refArrivalTime.current, {
+      defaultTime: this.isEditing ? moment(this.order.arrival_datetime).format('hh:mm A') : 'now',
+    });
+    const formSelectInstance = M.FormSelect.init(this.refTerminal.current);
+    M.CharacterCounter.init(this.refNote.current);
+    M.CharacterCounter.init(this.refUrgentContact.current);
+
+    if(this.isEditing){
+      timepickerInstance._updateTimeFromInput();
+      timepickerInstance.done();
+      this.refAddress.current.value = this.order.drop_off_address;
+      this.refFlightNum.current.value = this.order.flight;
+      this.refAddress.current.value = this.order.drop_off_address;
+      this.refTerminal.current.value = this.order.arrival_terminal;
+      this.refCompanionCount.current.value = this.order.companion_count;
+      this.refUrgentContact.current.value = this.order.urgent_contact_info;
+      this.refNote.current.value = this.order.note;
+    }
+  }
+
+  submitHandler(e) {
+    e.preventDefault();
+
+    const address = this.refAddress.current.value;
+    const flight = this.refFlightNum.current.value;
+    const arrivalDate = this.refArrivalDate.current.value;
+    const arrivalTime = this.refArrivalTime.current.value;
+    const terminal = this.refTerminal.current.value;
+    const note = this.refNote.current.value;
+    const companionCount = this.refCompanionCount.current.value;
+    const urgentContactInfo = this.refUrgentContact.current.value;
+
+    const arrivalDatetime = moment(new Date(`${arrivalDate} ${arrivalTime}`)).format(datetimeSQLFormat);
+
+    const data = { address, flight, arrivalDatetime, terminal, companionCount, urgentContactInfo, note, term: 'Fall 2019'};
+    console.log('data', data);
+    // return;
+
+    let method = 'post';
+    if (this.isEditing) {
+      data.id = this.order.id;
+      data.passenger = this.order.passenger.id;
+      method = 'put';
+    }
+    axios[method](orderEndpoint, data)
+      .then(res => {
+        // redirect back to home page with success message
+        this.props.history.push({
+          pathname: '/',
+          state: {
+            autoDismissMessage: <div className="card-panel green white-text center-align">
+              {this.isEditing ? '订单更新成功' : '您的接机请求提交成功! 请耐心等待司机接单！我们会以邮件通知您。'}
+            </div>
+          }
+        })
+      })
+      .catch(err => {
+        // show error message
+        this.refMessage.current.innerHTML = `<div class="card-panel red lighten-3 white-text center-align">
+          <p>提交失败，稍后重试.</p>
+          <p>如果一直不成功，直接发邮件联系我们 <a href="mailto:pickup@nucssa.org">pickup@nucssa.org</a></p>
+        </div>`;
+
+        console.log('Error', err);
+      })
+
+  };
+
+  goHome(){
+    this.props.history.push('/');
+  }
+
+  render () {
+
+    return (
+      <main className="container">
+        <div className="section row">
+          <h5 className="center-align">{this.isEditing ? '修改订单' : '创建订单'}</h5>
+          <div className="col s12">
+            <div ref={this.refMessage} id="message"></div>
+            <form action="" className="col s12" method="post" onSubmit={this.submitHandler}>
+              <div className="row">
+                <div className="input-field col s12">
+                  <i className="material-icons prefix">add_location</i>
+                  <input ref={this.refAddress} type="text" id="address" className="validate" required />
+                  <label htmlFor="address">目的地址</label>
+                </div>
+              </div>
+              <div className="row">
+                <div className="input-field col s12">
+                  <i className="material-icons prefix icon icon-paper-plane"></i>
+                  <input ref={this.refFlightNum} type="text" id="flight-number" className="validate" required style={{textTransform: 'uppercase'}} />
+                  <label htmlFor="flight-number">航班号码</label>
+                </div>
+              </div>
+              <div className="row">
+                <div className="input-field col s6">
+                  <i className="material-icons prefix">date_range</i>
+                  <input ref={this.refArrivalDate} type="text" id="arrival-date" className="datepicker validate" required />
+                  <label htmlFor="arrival-date">到达日期</label>
+                </div>
+                <div className="input-field col s6">
+                  <i className="material-icons prefix">access_time</i>
+                  <input ref={this.refArrivalTime} type="text" id="arrival-time" className="timepicker validate" required />
+                  <label htmlFor="arrival-time">时间</label>
+                </div>
+              </div>
+              <div className="row">
+                <div className="input-field col s12">
+                  <i className="material-icons prefix">flag</i>
+                  <select ref={this.refTerminal} className="validate" defaultValue="" required>
+                    <option value="" disabled>Choose your option</option>
+                    <option value="A">Terminal A</option>
+                    <option value="B">Terminal B</option>
+                    <option value="C">Terminal C</option>
+                    <option value="D">Terminal D</option>
+                    <option value="E">Terminal E</option>
+                  </select>
+                  <label>到达航站楼(Arrival Terminal)</label>
+                </div>
+              </div>
+              <div className="row">
+                <div className="input-field col s12">
+                  <i className="material-icons prefix">people</i>
+                  <input ref={this.refCompanionCount} type="number" id="companion-count" className="validate" defaultValue="0" required />
+                  <label htmlFor="companion-count">随行家属人数</label>
+                </div>
+              </div>
+              <div className="row">
+                <div className="input-field col s12">
+                  <i className="material-icons prefix">contact_phone</i>
+                  <textarea ref={this.refUrgentContact} id="urgent-contact" className="materialize-textarea" data-length="200" required></textarea>
+                  <label htmlFor="urgent-contact">紧急联系人信息</label>
+                </div>
+              </div>
+              <div className="row">
+                <div className="input-field col s12">
+                  <i className="material-icons prefix">message</i>
+                  <textarea ref={this.refNote} id="note" className="materialize-textarea" data-length="500"></textarea>
+                  <label htmlFor="note">备注信息(给司机)</label>
+                </div>
+              </div>
+              <div className="row center">
+                <button className="btn-large yellow darken-3 waves-effect waves-light" type="button" onClick={this.goHome}>
+                  返回 <i className="material-icons left">arrow_back</i>
+                </button>
+                <button className="btn-large blue waves-effect waves-light" type="submit" style={{ marginLeft: '5px' }}>
+                  提交 <i className="material-icons right">send</i>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    );
+  }
+}

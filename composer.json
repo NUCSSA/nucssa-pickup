@@ -1,6 +1,7 @@
 {
     "require": {
-        "overtrue/wechat": "^4.1"
+        "overtrue/wechat": "^4.1",
+        "timber/timber": "^1.10"
     },
     "autoload": {
         "files": [],

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="icon" href="{{ site.icon }}">
+  <title>NUCSSA接机 - {% block title %}{% endblock %}</title>
+</head>
+<body style="margin:0;padding:0;">
+  <header>
+    <a href="{{ site.link }}/pickup" style="text-decoration: none">
+      <h1 style="color:#B71C1C;padding:24px;margin:0;text-align:center;">NUCSSA迎新生接机系统</h1>
+    </a>
+  </header>
+  <main style="font-size: 1.2em;display:flex;justify-content:center;">
+    <div style="padding: 10px 30px;">
+    <p>{{ user_display_name }} 您好, </p>
+    {% block message %}
+    {% endblock %}
+    <p style="text-align:center;font-size:1rem;color:#1a237e">
+      <a href="{{ site.link }}/pickup }}" style="color:#1a237e;text-decoration:none;">点此进入NUCSSA接机系统</a>
+    </p>
+    <div style="text-align:center;font-size:0.85rem;color:#bdbdbd">
+      此邮件为系统邮件，请勿回复，有问题欢迎联系我们接机负责组的小伙伴们: <a href="mailto:pickup@nucssa.org" style="color: #e57373;">pickup@nucssa.org</a>
+    </div>
+
+    </div>
+
+  </main>
+  <footer style="background-image: linear-gradient(#601C16, #140503); padding: 2rem 0; text-align: center;">
+    <div style="font-weight: bold;font-size: 3rem;color: #D92110;line-height: 3rem;">
+      NUCSSA IT
+    </div>
+    <img src="{{nucssa_logo_url}}" alt="brand-image" style="width: 9rem;">
+    <div style="color: rgba(255,255,255,0.5);font-size: 0.8rem;font-weight: 100;">
+      © {{ 'now'|date('Y') }} NUCSSA IT All Rights Reserved
+    </div>
+  </footer>
+</body>
+</html>

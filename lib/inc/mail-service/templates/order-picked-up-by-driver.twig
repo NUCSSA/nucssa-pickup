@@ -1,0 +1,20 @@
+{% extends "base/base.twig" %}
+{% block title %}订单更新提醒{% endblock %}
+{% block message %}
+  <p>有司机接了您的订单，司机信息如下(您可以在系统中查看更多司机详细信息)</p>
+  <table style="border-top:#90caf9 solid 1px;border-bottom:#90caf9 solid 1px;">
+    <tr>
+      <th width="100px">姓名</th>
+      <td>{{driver.name}}</td>
+    </tr>
+    <tr>
+      <th width="100px">微信</th>
+      <td>{{driver.wechat}}</td>
+    </tr>
+    <tr>
+      <th width="100px">电话</th>
+      <td>{{driver.phone}} | {{driver.carrier}}</td>
+    </tr>
+  </table>
+  <p>感谢您的支持。</p>
+{% endblock %}

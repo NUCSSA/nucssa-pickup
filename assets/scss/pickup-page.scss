@@ -1,0 +1,30 @@
+@import url(https://fonts.nucssa.org/nucssa-icon-font/style.css);
+@import url(https://fonts.nucssa.org/material-icons/iconfont/material-icons.css);
+@import '~materialize-css/dist/css/materialize.min';
+@import 'footer';
+
+.mobile-fab-tip {
+  position: fixed;
+  right: 85px;
+  padding:0px 0.5rem;
+  text-align: right;
+  background-color: #323232;
+  border-radius: 2px;
+  color: #FFF;
+  width:auto;
+}
+
+.tooltipped {
+  cursor: pointer;
+}
+
+// #toast-container {
+//   top: 10% !important;
+//   left: 7%;
+//   right: auto !important;
+//   bottom: auto;
+// }
+
+// .toast {
+//   background-color: transparent;
+// }

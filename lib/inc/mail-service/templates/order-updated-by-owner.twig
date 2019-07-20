@@ -1,0 +1,37 @@
+{% extends "base/base.twig" %}
+{% block title %}订单更新提醒{% endblock %}
+{% block message %}
+  <p>您有一个订单更新: </p>
+  <table style="border-top:#90caf9 solid 1px;border-bottom:#90caf9 solid 1px;">
+    <tr>
+      <th width="100px">乘客姓名</th>
+      <td>{{passenger.name}}</td>
+    </tr>
+    <tr>
+      <th width="100px">微信</th>
+      <td>{{passenger.wechat}}</td>
+    </tr>
+    <tr>
+      <th width="100px">到达时间</th>
+      <td>{{order.arrival_datetime}}</td>
+    </tr>
+    <tr>
+      <th width="100px">送达地址</th>
+      <td>{{order.drop_off_address}}</td>
+    </tr>
+    <tr>
+      <th width="100px">接机航站楼</th>
+      <td>Terminal {{order.arrival_terminal}}</td>
+    </tr>
+    <tr>
+      <th width="100px">航班号码</th>
+      <td>{{order.flight}}</td>
+    </tr>
+    <tr>
+      <th width="100px">备注信息</th>
+      <td>{{order.note}}</td>
+    </tr>
+  </table>
+  <p>进入系统查看订单的详细信息。</p>
+  <p>感谢您的支持。</p>
+{% endblock %}
