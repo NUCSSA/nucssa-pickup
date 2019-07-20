@@ -22,9 +22,6 @@ export default class HomePage extends Component {
   }
 
   async componentDidMount() {
-    // init Floating Action Button
-    M.FloatingActionButton.init(this.refPageActionsFAB.current);
-
     try {
       /**
        * Fetch Data
@@ -34,7 +31,7 @@ export default class HomePage extends Component {
        */
       let resp = await axios.get(userEndpoint);
       const user = resp.data.data.user;
-      console.log('user', user);
+      // console.log('user', user);
       this.setState({user})
 
       resp = await axios.get(`${orderEndpoint}&user_role=passenger`);
@@ -45,7 +42,7 @@ export default class HomePage extends Component {
       if (user.role == 'DRIVER') {
         resp = await axios.get(`${orderEndpoint}&user_role=driver`);
         const managedOrders = resp.data.data;
-        console.log('managed orders', managedOrders);
+        // console.log('managed orders', managedOrders);
         this.setState({managedOrders});
       }
 
@@ -58,11 +55,12 @@ export default class HomePage extends Component {
   componentDidUpdate() {
     // init tooltips
     M.Tooltip.init(document.querySelectorAll('.tooltipped'));
-
+    // init Floating Action Button
+    M.FloatingActionButton.init(this.refPageActionsFAB.current);
   }
 
   ownOrdersSection() {
-    console.log('own orders', this.state.ownOrders);
+    // console.log('own orders', this.state.ownOrders);
     const driverHTML = (driver) => driver ?
       <UserInfoCard
         name={driver.name}
@@ -101,11 +99,11 @@ export default class HomePage extends Component {
       const deleteOrder = () => {
         axios.delete(`${orderEndpoint}&order_id=${order.id}`)
           .then((res) => {
-            console.log('resp', res);
+            // console.log('resp', res);
             this.setState({ownOrders: this.state.ownOrders.filter(o => o.id !== order.id)});
           })
           .catch(err => {
-            console.log('Error', err);
+            // console.log('Error', err);
           });
       };
 

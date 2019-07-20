@@ -7,8 +7,7 @@ use function nucssa_pickup\templates\template_utils\authenticate;
 
 /**
  * REST GET Request
- * Get user by email
- * Response with current user if email is not provided
+ * Get user by email, or get current logged in user if email not provided
  */
 function show($email = NULL) {
   authenticate();

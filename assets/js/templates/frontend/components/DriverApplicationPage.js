@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import path from 'path';
 import axios from 'axios';
-import { driverEndpoint, nonce } from '../../../utils/constants';
+import { userEndpoint, driverEndpoint, nonce } from '../../../utils/constants';
 
 export default class DriverApplicationPage extends Component {
   constructor(props) {
@@ -14,11 +14,6 @@ export default class DriverApplicationPage extends Component {
       term: 'Fall 2019',
     };
 
-    if (this.props.location.state && this.props.location.state.user) {
-      this.state.phone = this.props.location.state.user.phone;
-      this.state.carrier = this.props.location.state.user.carrier;
-    }
-
     this.submit = this.submit.bind(this);
     this.goHome = this.goHome.bind(this);
 
@@ -26,8 +21,15 @@ export default class DriverApplicationPage extends Component {
     this.refLicense = React.createRef();
   }
 
-  componentDidMount() {
-
+  async componentDidMount() {
+    try {
+      const { data: { data: {user} } } = await axios.get(userEndpoint);
+      this.setState({
+        phone: user.phone && user.phone || '',
+        carrier: user.carrier && user.carrier || '',
+      });
+    } catch (err) {
+    }
   }
 
   goHome(){
