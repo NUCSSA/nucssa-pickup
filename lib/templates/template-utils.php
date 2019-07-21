@@ -56,7 +56,7 @@ function process_submission_data(){
     ]);
     if ($wpdb->insert_id) {
       $user = $wpdb->get_row("SELECT * FROM pickup_service_users WHERE id = $wpdb->insert_id");
-      do_action('pickup_user_created', $user);
+      do_action('np_user_created', $user);
       $_SESSION['user'] = $user;
     }
   }

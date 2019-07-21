@@ -22,7 +22,7 @@ class MailService {
     return 'text/html';
   }
 
-  public static function pickup_user_created($user) {
+  public static function np_user_created($user) {
     $twig = self::initTwig();
     $context = self::baseContext();
     $context['user_display_name'] = $user->name;
@@ -30,19 +30,19 @@ class MailService {
     $message = $twig->render('welcome-message.twig', $context);
     wp_mail($user->email, '欢迎来到NUCSSA接机系统', $message);
   }
-  public static function pickup_order_created($order, $passenger) {
+  public static function new_order_created($order, $passenger) {
     $twig = self::initTwig();
     $context = self::baseContext();
 
     // send to every valid driver
     global $wpdb;
     $term = 'Fall 2019';
-    $drivers = $wpdb->get_results("SELECT u.* FROM pickup_service_users as u, pickup_service_drivers as d WHERE d.certified = TRUE AND d.term = $term");
+    $drivers = $wpdb->get_results("SELECT u.* FROM pickup_service_users as u RIGHT JOIN pickup_service_drivers as d ON d.user_id = u.id WHERE d.certified = TRUE AND d.term = '$term'");
     foreach ($drivers as $driver) {
       $context['user_display_name'] = $driver->name;
       $context['order'] = $order;
       $message = $twig->render('new-order-created.twig', $context);
-      wp_mail($driver->email, '欢迎来到NUCSSA接机系统', $message);
+      wp_mail($driver->email, '新订单提醒', $message);
     }
   }
   public static function order_picked_up_by_driver($order_id, $driver) {
@@ -82,6 +82,7 @@ class MailService {
   public static function order_deleted_by_owner($order, $passenger) {
     global $wpdb;
     $driver = $wpdb->get_row("SELECT driver.name, driver.email FROM pickup_service_users as driver, pickup_service_orders as o WHERE o.id = $order->id AND o.driver = driver.id");
+    if (!$driver) return;
     $twig = self::initTwig();
     $context = self::baseContext();
     $context['user_display_name'] = $driver->name;

@@ -244,7 +244,7 @@ function create() {
    * @param $oder
    * @param passenger
    */
-  do_action('pickup_order_created', $order_data, $user);
+  do_action('new_order_created', $order_data, $user);
   wp_send_json_success();
 }
 

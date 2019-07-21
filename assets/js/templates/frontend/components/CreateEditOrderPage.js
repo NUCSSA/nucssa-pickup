@@ -17,6 +17,7 @@ export default class CreateEditOrderPage extends Component {
     this.refNote = React.createRef();
     this.refMessage = React.createRef();
     this.refCompanionCount = React.createRef();
+    this.refLuggageCount = React.createRef();
     this.refUrgentContact = React.createRef();
 
     this.submitHandler = this.submitHandler.bind(this);
