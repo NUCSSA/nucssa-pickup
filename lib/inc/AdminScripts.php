@@ -11,7 +11,7 @@ class AdminScripts
    */
   public static function init($hook)
   {
-    // self::loadScripts($hook);
+    self::loadScripts($hook);
     self::loadStyles($hook);
 
 

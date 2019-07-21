@@ -13,6 +13,7 @@ class Activation
   {
     self::migrate();        // Adds DB tables for pickup info persistence
     self::addPickupPage();  // Adds the frontend pickup page (nucssa.org/pickup)
+    self::addPickupAdminRolesAndPerms();
   }
 
   /**
@@ -67,7 +68,10 @@ drivers_table;
         flight VARCHAR(255) NOT NULL,
         arrival_datetime DATETIME NOT NULL,
         arrival_terminal VARCHAR(5) NOT NULL,
+        companion_count TINYINT NOT NULL,
+        luggage_count TINYINT NOT NULL,
         drop_off_address VARCHAR(255) NOT NULL,
+        urgent_contact_info VARCHAR(255) NOT NULL,
         note VARCHAR(2000),
         term VARCHAR(10) NOT NULL,
 
@@ -107,5 +111,13 @@ orders_table;
 
       update_option('nucssa_pickup_service_page_id', $postID);
     }
+  }
+
+  private static function addPickupAdminRolesAndPerms() {
+    add_role('pickup_admin', '接机管理员', ['manage_pickups' => true, 'read' => true]);
+
+    // Add cap to admin too
+    $role = \get_role('administrator');
+    $role->add_cap('manage_pickups');
   }
 }

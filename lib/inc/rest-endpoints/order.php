@@ -154,6 +154,7 @@ function update() {
   $arrivalDatetime = sanitize_text_field($data['arrivalDatetime']);
   $terminal = sanitize_text_field($data['terminal']);
   $companionCount = sanitize_text_field($data['companionCount']);
+  $luggageCount = sanitize_text_field($data['luggageCount']);
   $urgentContactInfo = sanitize_text_field($data['urgentContactInfo']);
   $note = sanitize_text_field($data['note']);
   $term = sanitize_text_field($data['term']);
@@ -166,6 +167,7 @@ function update() {
       'arrival_datetime' => $arrivalDatetime,
       'arrival_terminal' => $terminal,
       'companion_count' => $companionCount,
+      'luggage_count' => $luggageCount,
       'urgent_contact_info' => $urgentContactInfo,
       'note' => $note,
       'term' => $term,
@@ -186,6 +188,7 @@ function update() {
       'arrival_datetime' => $arrivalDatetime,
       'arrival_terminal' => $terminal,
       'companion_count' => $companionCount,
+      'luggage_count' => $luggageCount,
       'urgent_contact_info' => $urgentContactInfo,
       'note' => $note,
     ];
@@ -214,6 +217,7 @@ function create() {
   $arrivalDatetime = sanitize_text_field($data['arrivalDatetime']);
   $terminal = sanitize_text_field($data['terminal']);
   $companionCount = sanitize_text_field($data['companionCount']);
+  $luggageCount = sanitize_text_field($data['luggageCount']);
   $urgentContactInfo = sanitize_text_field($data['urgentContactInfo']);
   $note = sanitize_text_field($data['note']);
   $term = sanitize_text_field($data['term']);
@@ -225,6 +229,7 @@ function create() {
     'arrival_datetime' => $arrivalDatetime,
     'arrival_terminal' => $terminal,
     'companion_count' => $companionCount,
+    'luggage_count' => $luggageCount,
     'urgent_contact_info' => $urgentContactInfo,
     'note' => $note,
     'term' => $term,

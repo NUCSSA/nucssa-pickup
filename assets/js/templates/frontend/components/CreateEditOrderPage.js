@@ -51,6 +51,7 @@ export default class CreateEditOrderPage extends Component {
       this.refAddress.current.value = this.order.drop_off_address;
       this.refTerminal.current.value = this.order.arrival_terminal;
       this.refCompanionCount.current.value = this.order.companion_count;
+      this.refLuggageCount.current.value = this.order.luggage_count;
       this.refUrgentContact.current.value = this.order.urgent_contact_info;
       this.refNote.current.value = this.order.note;
     }
@@ -66,11 +67,12 @@ export default class CreateEditOrderPage extends Component {
     const terminal = this.refTerminal.current.value;
     const note = this.refNote.current.value;
     const companionCount = this.refCompanionCount.current.value;
+    const luggageCount = this.refLuggageCount.current.value;
     const urgentContactInfo = this.refUrgentContact.current.value;
 
     const arrivalDatetime = moment(new Date(`${arrivalDate} ${arrivalTime}`)).format(datetimeSQLFormat);
 
-    const data = { address, flight, arrivalDatetime, terminal, companionCount, urgentContactInfo, note, term: 'Fall 2019'};
+    const data = { address, flight, arrivalDatetime, terminal, companionCount, luggageCount, urgentContactInfo, note, term: 'Fall 2019'};
     console.log('data', data);
     // return;
 
@@ -162,6 +164,13 @@ export default class CreateEditOrderPage extends Component {
                   <i className="material-icons prefix">people</i>
                   <input ref={this.refCompanionCount} type="number" id="companion-count" className="validate" defaultValue="0" required />
                   <label htmlFor="companion-count">随行家属人数</label>
+                </div>
+              </div>
+              <div className="row">
+                <div className="input-field col s12">
+                  <i className="material-icons prefix icon icon-suitcase-with-wheels"></i>
+                  <input ref={this.refLuggageCount} type="number" id="luggage-count" className="validate" defaultValue="0" required />
+                  <label htmlFor="luggage-count">行李数量</label>
                 </div>
               </div>
               <div className="row">

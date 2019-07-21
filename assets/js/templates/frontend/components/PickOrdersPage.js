@@ -13,6 +13,7 @@ export default class DriverApplicationPage extends Component {
     };
 
     this.actionCellHTML = this.actionCellHTML.bind(this);
+    this.goHome = this.goHome.bind(this);
   }
 
   componentDidMount() {
@@ -27,6 +28,10 @@ export default class DriverApplicationPage extends Component {
       this.setState({ orders: pendingOrders });
     } catch (error) {
     }
+  }
+
+  goHome() {
+    this.props.history.push('/');
   }
 
   actionCellHTML(order) {
@@ -61,6 +66,8 @@ export default class DriverApplicationPage extends Component {
             <thead>
               <tr>
                 <th>飞机到达时间</th>
+                <th>随行家属人数</th>
+                <th>行李件数</th>
                 <th>目的地址</th>
                 <th>订单操作</th>
               </tr>
@@ -70,6 +77,8 @@ export default class DriverApplicationPage extends Component {
                 this.state.orders.map(order => (
                   <tr key={order.id}>
                     <td>{moment(order.arrival_datetime).format(datetimeDisplayFormat)}</td>
+                    <td>{order.companion_count}</td>
+                    <td>{order.luggage_count}</td>
                     <td>{order.drop_off_address}</td>
                     <td>{this.actionCellHTML(order)}</td>
                   </tr>
@@ -77,6 +86,11 @@ export default class DriverApplicationPage extends Component {
               }
             </tbody>
           </table>
+        </div>
+        <div className="row center">
+          <button className="btn-large red darken-2 waves-effect waves-light" onClick={this.goHome}>
+            返回主页 <i className="material-icons left">home</i>
+          </button>
         </div>
       </main>
     );

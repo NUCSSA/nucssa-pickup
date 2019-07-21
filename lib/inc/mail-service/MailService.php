@@ -98,6 +98,34 @@ class MailService {
     $message = $twig->render('new-driver-application-submitted.twig', $context);
     wp_mail('pickup@nucssa.org', '新司机待您审核', $message);
   }
+  public static function drivers_application_approved($driver_ids) {
+    global $wpdb;
+    $driver_ids_str = implode(',', $driver_ids);
+    $drivers = $wpdb->get_results("SELECT * FROM pickup_service_users u JOIN pickup_service_drivers d ON u.id = d.user_id WHERE d.id IN ($driver_ids_str)");
+
+    $twig = self::initTwig();
+    $context = self::baseContext();
+
+    foreach ($drivers as $driver) {
+      $context['user_display_name'] = $driver->name;
+      $message = $twig->render('driver-application-approved.twig', $context);
+      wp_mail($driver->email, '司机申请成功', $message);
+    }
+  }
+  public static function drivers_application_declined($driver_ids) {
+    global $wpdb;
+    $driver_ids_str = implode(',', $driver_ids);
+    $drivers = $wpdb->get_results("SELECT * FROM pickup_service_users u JOIN pickup_service_drivers d ON u.id = d.user_id WHERE d.id IN ($driver_ids_str)");
+
+    $twig = self::initTwig();
+    $context = self::baseContext();
+
+    foreach ($drivers as $driver) {
+      $context['user_display_name'] = $driver->name;
+      $message = $twig->render('driver-application-declined.twig', $context);
+      wp_mail($driver->email, '司机申请失败', $message);
+    }
+  }
 
   public static function testHTML() {
 

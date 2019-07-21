@@ -32,8 +32,8 @@ function create() {
     $wpdb->insert('pickup_service_drivers', [
       'user_id' => $user->id,
       'huskyID' => $_POST['huskyID'],
-      'husky_card' => $moveHuskycard['file'],
-      'drivers_license' => $moveLicense['file'],
+      'husky_card' => $moveHuskycard['url'],
+      'drivers_license' => $moveLicense['url'],
       'term' => $_POST['term'],
     ]);
     $wpdb->update(

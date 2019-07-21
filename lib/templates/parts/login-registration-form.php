@@ -68,7 +68,7 @@
       <div class="row">
         <div class="input-field col s6">
           <i class="material-icons prefix">phone</i>
-          <input type="tel" id="register-phone" name="user[phone]" />
+          <input type="number" id="register-phone" name="user[phone]" />
           <label for="register-phone">手机号(Optional)</label>
         </div>
         <div class="input-field col s6">

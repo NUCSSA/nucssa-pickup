@@ -22,3 +22,5 @@ add_action('order_deleted_by_owner', ['nucssa_pickup\mail_service\MailService', 
 add_action('pickup_user_created', ['nucssa_pickup\mail_service\MailService', 'pickup_user_created'], 10, 2);
 add_action('pickup_order_created', ['nucssa_pickup\mail_service\MailService', 'pickup_order_created'], 10, 2);
 add_action('new_driver_application_submitted', ['nucssa_pickup\mail_service\MailService', 'new_driver_application_submitted']);
+add_action('drivers_application_approved', ['nucssa_pickup\mail_service\MailService', 'drivers_application_approved']);
+add_action('drivers_application_declined', ['nucssa_pickup\mail_service\MailService', 'drivers_application_declined']);

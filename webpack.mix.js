@@ -20,6 +20,7 @@ mix.sass('assets/scss/admin-pickup-page.scss', 'public/css')
       'assets/js/all.js'
       ], 'public/js/all.js')
     .react('assets/js/app.js', 'public/js')
+    .js('assets/js/admin.js', 'public/js')
     .copyDirectory('assets/images/', 'public/images/')
     .browserSync({
       proxy: 'wp.localhost',

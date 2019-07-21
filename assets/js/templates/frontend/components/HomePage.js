@@ -90,6 +90,14 @@ export default class HomePage extends Component {
               <td>航站楼 Terminal ${order.arrival_terminal}</td>
             </tr>
             <tr>
+              <th><i class="material-icons">people</i></th>
+              <td>随行人数 ${order.companion_count}</td>
+            </tr>
+            <tr>
+              <th><i class="material-icons icon icon-suitcase-with-wheels"></i></th>
+              <td>行李数量 ${order.luggage_count}</td>
+            </tr>
+            <tr>
               <th><i class="material-icons">message</i></th>
               <td>${order.note}</td>
             </tr>

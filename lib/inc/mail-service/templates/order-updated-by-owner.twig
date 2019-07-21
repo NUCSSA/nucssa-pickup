@@ -8,27 +8,35 @@
       <td>{{passenger.name}}</td>
     </tr>
     <tr>
-      <th width="100px">微信</th>
+      <th>微信</th>
       <td>{{passenger.wechat}}</td>
     </tr>
     <tr>
-      <th width="100px">到达时间</th>
+      <th>到达时间</th>
       <td>{{order.arrival_datetime}}</td>
     </tr>
     <tr>
-      <th width="100px">送达地址</th>
+      <th>送达地址</th>
       <td>{{order.drop_off_address}}</td>
     </tr>
     <tr>
-      <th width="100px">接机航站楼</th>
+      <th>接机航站楼</th>
       <td>Terminal {{order.arrival_terminal}}</td>
     </tr>
     <tr>
-      <th width="100px">航班号码</th>
+      <th>航班号码</th>
       <td>{{order.flight}}</td>
     </tr>
     <tr>
-      <th width="100px">备注信息</th>
+      <th>随行家属人数</th>
+      <td>{{order.companion_count}}</td>
+    </tr>
+    <tr>
+      <th>行李数量</th>
+      <td>{{order.luggage_count}}</td>
+    </tr>
+    <tr>
+      <th>备注信息</th>
       <td>{{order.note}}</td>
     </tr>
   </table>
