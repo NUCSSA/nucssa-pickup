@@ -66,14 +66,31 @@ export default class HomePage extends Component {
 
   ownOrdersSection() {
     // console.log('own orders', this.state.ownOrders);
-    const driverHTML = (driver) => driver ?
-      <UserInfoCard
-        name={driver.name}
-        wechat={driver.wechat}
-        phone={driver.phone}
-        email={driver.email}
-      /> :
-      '等待司机接单';
+    const driverCellHTML = (order) => {
+      // console.log('driver', order.driver);
+      const driverInfoCard = (driver) => (
+        <UserInfoCard
+          name={driver.name}
+          wechat={driver.wechat}
+          phone={driver.phone}
+          email={driver.email}
+          vehiclePlateNumber={driver.vehicle_plate_number}
+          vehicleMakeAndModel={driver.vehicle_make_and_model}
+          vehicleColor={driver.vehicle_color}
+        />
+      );
+      if (order.approved === null) {
+        return <strong style={{ color: 'red' }}>新生身份审核中</strong>;
+      } else if (order.approved === "0") {
+        return <strong style={{ color: 'red' }}>新生身份审核失败</strong>;
+      } else {
+        if (order.driver) {
+          return driverInfoCard(order.driver);
+        } else {
+          return '等待司机接单';
+        }
+      }
+    }
     const actionCellHTML = (order) => {
       const orderDetailCard = `
         <div class="card-content">
@@ -154,7 +171,7 @@ export default class HomePage extends Component {
                 <tr key={order.id}>
                   <td>{moment(order.arrival_datetime).format(datetimeDisplayFormat)}</td>
                   <td>{order.drop_off_address}</td>
-                  <td>{order.approved === "0" ? <strong style={{color: 'red'}}>新生身份审核失败</strong> : driverHTML(order.driver)}</td>
+                  <td>{driverCellHTML(order)}</td>
                   <td>{actionCellHTML(order)}</td>
                 </tr>
               ))
@@ -166,6 +183,7 @@ export default class HomePage extends Component {
   }
 
   managedOrdersSection() {
+    const arrivalTimeHTML = order => moment(order.arrival_datetime).format(datetimeDisplayFormat);
 
     const actionCellHTML = (order) => {
       const orderDetailCard = `
@@ -181,7 +199,7 @@ export default class HomePage extends Component {
             </tr>
             <tr>
               <th><i class="material-icons">access_time</i></th>
-              <td>${moment(order.arrival_datetime).format(datetimeDisplayFormat)}</td>
+              <td>${arrivalTimeHTML(order)}</td>
             </tr>
             <tr>
               <th><i class="material-icons">flag</i></th>
@@ -232,7 +250,7 @@ export default class HomePage extends Component {
             {
               this.state.managedOrders.map((order) => (
                 <tr key={order.passenger.email}>
-                  <td>{moment(order.arivalTime).format(datetimeDisplayFormat)}</td>
+                  <td>{arrivalTimeHTML(order)}</td>
                   <td>{order.drop_off_address}</td>
                   <td>
                     <UserInfoCard

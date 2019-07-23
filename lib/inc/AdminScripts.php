@@ -11,19 +11,17 @@ class AdminScripts
    */
   public static function init($hook)
   {
-    self::loadScripts($hook);
-    self::loadStyles($hook);
-
+    self::loadPickupPageScripts($hook);
+    self::loadPickupPageStyles($hook);
+    self::loadAdminGlobalStyles();
 
     // load browserSync script for development
     self::enableBrowserSyncOnDebugMode();
   }
 
-  private static function loadScripts($hook)
+  private static function loadPickupPageScripts($hook)
   {
-    if ($hook === 'toplevel_page_admin-menu-page-nucssa-pickup' || strpos($hook, 'pickup__order-review') === false) {
-      return;
-    }
+    if (!self::isPickupMenuPages($hook)) return;
 
     $handle = 'nucssa_pickup_amdin_script';
     // load core script
@@ -37,17 +35,19 @@ class AdminScripts
 
   }
 
-  private static function loadStyles($hook) {
-    if ($hook === 'toplevel_page_admin-menu-page-nucssa-pickup' || strpos($hook, 'pickup__order-review') !== false) {
-      wp_enqueue_style(
-        'nucssa_pickup_admin_page_style',
-        NUCSSA_PICKUP_DIR_URL . 'public/css/admin-pickup-page.css',
-        [], // deps
-        false,   // version
-        'all'    // media
-      );
-    }
+  private static function loadPickupPageStyles($hook) {
+    if (!self::isPickupMenuPages($hook)) return;
 
+    wp_enqueue_style(
+      'nucssa_pickup_admin_page_style',
+      NUCSSA_PICKUP_DIR_URL . 'public/css/admin-pickup-page.css',
+      [], // deps
+      false,   // version
+      'all'    // media
+    );
+  }
+
+  private static function loadAdminGlobalStyles() {
     // Global Styles
     wp_enqueue_style(
       'nucssa_pickup_admin_global_style',
@@ -64,5 +64,9 @@ class AdminScripts
         echo '<script async="" src="http://wp.localhost:3000/browser-sync/browser-sync-client.js"></script>';
       });
     }
+  }
+
+  private static function isPickupMenuPages($hook) {
+    return $hook === 'toplevel_page_admin-menu-page-nucssa-pickup' || strpos($hook, 'pickup__order-review') !== false;
   }
 }
