@@ -303,6 +303,7 @@ export default class HomePage extends Component {
       <Link to="/pick-orders" className="btn-floating blue"><i className="material-icons">add_shopping_cart</i></Link>
       <a className="btn-floating mobile-fab-tip">抢单</a>
     </li>;
+
     const actionApplyDriver = <li>
       <Link to={{
         pathname: "/driver-application",
@@ -315,14 +316,17 @@ export default class HomePage extends Component {
       </Link>
       <a className="btn-floating mobile-fab-tip">申请成为司机</a>
     </li>;
+
+    const actionCreateOrder = <li>
+      <Link to="/new-order" className="btn-floating red"><i className="large material-icons">add_circle</i></Link>
+      <a className="btn-floating mobile-fab-tip">创建接机订单</a>
+    </li>;
+
     return (
       <div className="fixed-action-btn" ref={this.refPageActionsFAB}>
         <a className="btn-floating btn-large red"><i className="large material-icons">add</i></a>
         <ul>
-          <li>
-            <Link to="/new-order" className="btn-floating red"><i className="large material-icons">add_circle</i></Link>
-            <a className="btn-floating mobile-fab-tip">创建接机订单</a>
-          </li>
+          { this.state.ownOrders.length == 0 && actionCreateOrder }
           { this.state.user.role == 'DRIVER' && actionPickOrders }
           { this.state.user.role == 'PASSENGER' && actionApplyDriver }
           <li>
