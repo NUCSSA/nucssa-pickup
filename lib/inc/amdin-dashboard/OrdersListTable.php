@@ -3,11 +3,11 @@ namespace nucssa_pickup\admin_dashboard;
 
 use function nucssa_core\utils\debug\file_log;
 
-class DriversListTable extends WP_List_Table {
+class OrdersListTable extends WP_List_Table {
   public function __construct() {
     parent::__construct([
-      'singular' => 'driver',
-      'plural' => 'drivers',
+      'singular' => 'order',
+      'plural' => 'orders',
       'ajax' => true,
     ]);
 
@@ -22,7 +22,7 @@ class DriversListTable extends WP_List_Table {
      */
     $this->_column_headers = [
       $this->get_columns(),
-      ['driver_id' => 'Driver Record ID'],
+      ['order_id' => 'Order Record ID'],
       [],
       'name'
     ];
@@ -40,15 +40,15 @@ class DriversListTable extends WP_List_Table {
 
     switch ($approval_status) {
       case '': // pending
-        $approval_status_clause = 'certified IS NULL';
+        $approval_status_clause = 'approved IS NULL';
         break;
       case 'approved':
-        $approval_status_clause = 'certified = 1';
+        $approval_status_clause = 'approved = 1';
         break;
       case 'failed':
-        $approval_status_clause = 'certified = 0';
+        $approval_status_clause = 'approved = 0';
         break;
-      case 'all':  // all drivers
+      case 'all':  // all orders
         $approval_status_clause = '';
         break;
     }
@@ -65,22 +65,22 @@ class DriversListTable extends WP_List_Table {
     $per_page = 10;
     $offset = ($current_page - 1) * $per_page;
 
-    $total_count_query = "SELECT COUNT(*) FROM pickup_service_drivers AS d
+    $total_count_query = "SELECT COUNT(*) FROM pickup_service_orders AS o
                           LEFT JOIN pickup_service_users AS u
-                          ON d.user_id = u.id
+                          ON o.passenger = u.id
                           $where_clause";
-    $data_query = "SELECT d.id AS driver_id, name, email, wechat, phone, carrier, huskyID, husky_card, drivers_license, certified
-                    FROM pickup_service_drivers AS d
+    $data_query = "SELECT o.id AS order_id, name, email, wechat, phone, carrier, huskyID, admission_notice, approved
+                    FROM pickup_service_orders AS o
                     LEFT JOIN pickup_service_users AS u
-                    ON d.user_id = u.id
+                    ON o.passenger = u.id
                     $where_clause
                     LIMIT $offset, $per_page";
     $total_items = $wpdb->get_var($total_count_query);
     $total_pages = ceil($total_items / $per_page);
-    $drivers = $wpdb->get_results($data_query);
+    $orders = $wpdb->get_results($data_query);
 
 
-    $this->items = $drivers;
+    $this->items = $orders;
     $this->set_pagination_args([
       'total_items' => $total_items,
       'total_pages' => $total_pages,
@@ -102,9 +102,8 @@ class DriversListTable extends WP_List_Table {
       'email'  => 'Email',
       'phone'  => '电话',
       'huskyID'  => 'Husky ID',
-      'husky_card'  => 'Husky Card',
-      'drivers_license'  => "Driver's License",
-      'certified' => '审核状态',
+      'admission_notice'  => '录取通知书',
+      'approved' => '审核状态',
     ];
   }
 
@@ -120,7 +119,7 @@ class DriversListTable extends WP_List_Table {
   }
 
   public function column_cb($item) {
-    return "<input type='checkbox' name='driver[]' value=$item->driver_id />";
+    return "<input type='checkbox' name='order[]' value=$item->order_id />";
   }
 
   // sets permissions for ajax requests from this page
@@ -130,14 +129,14 @@ class DriversListTable extends WP_List_Table {
 
   public function column_name($item) {
     $actions = [
-      "<a href='".wp_nonce_url("?page={$_REQUEST['page']}&action=approve&driver=$item->driver_id", 'bulk-drivers') . "'>通过</a>",
-      "<a class='row-action decline' href='".wp_nonce_url("?page={$_REQUEST['page']}&action=decline&driver=$item->driver_id", 'bulk-drivers')."'>拒绝</a>",
+      "<a href='".wp_nonce_url("?page={$_REQUEST['page']}&action=approve&order=$item->order_id", 'bulk-orders') . "'>通过</a>",
+      "<a class='row-action decline' href='".wp_nonce_url("?page={$_REQUEST['page']}&action=decline&order=$item->order_id", 'bulk-orders')."'>拒绝</a>",
     ];
     $row_actions = $this->row_actions($actions);
     return "$item->name $row_actions";
   }
-  public function column_driver_id($item) {
-    return $item->driver_id;
+  public function column_order_id($item) {
+    return $item->order_id;
   }
   public function column_wechat($item) {
     return $item->wechat;
@@ -151,14 +150,11 @@ class DriversListTable extends WP_List_Table {
   public function column_phone($item) {
     return "$item->phone<br/>$item->carrier";
   }
-  public function column_husky_card($item) {
-    return "<a href='$item->husky_card' data-featherlight='image'><img class='admin-pickup-entry-image' src='$item->husky_card' /></a>";
+  public function column_admission_notice($item) {
+    return "<a href='$item->admission_notice' data-featherlight='image'><img class='admin-pickup-entry-image' src='$item->admission_notice' /></a>";
   }
-  public function column_drivers_license($item) {
-    return "<a href='$item->drivers_license' data-featherlight='image'><img class='admin-pickup-entry-image' src='$item->drivers_license' /></a>";
-  }
-  public function column_certified($item) {
-    switch ($item->certified) {
+  public function column_approved($item) {
+    switch ($item->approved) {
       case null:
         return '等待审核';
       case 1:
@@ -175,37 +171,37 @@ class DriversListTable extends WP_List_Table {
     if (!$action) return;
 
     $nonce = $_GET['_wpnonce'];
-    if (!wp_verify_nonce($nonce, 'bulk-drivers')) {
+    if (!wp_verify_nonce($nonce, 'bulk-orders')) {
       $this->invalid_nonce_redirect();
     } else {
-      $drivers = is_array($_GET['driver']) ? $_GET['driver'] : [$_GET['driver']];
-      $driver_ids_str = implode(',', $drivers);
-      $certified = null;
+      $orders = is_array($_GET['order']) ? $_GET['order'] : [$_GET['order']];
+      $order_ids_str = implode(',', $orders);
+      $approved = null;
       switch ($action) {
         case 'approve':
-          $certified = 1;
+          $approved = 1;
           break;
         case 'decline':
-          $certified = 0;
+          $approved = 0;
         default:
           break;
       }
-      if (!is_null($certified)) {
+      if (!is_null($approved)) {
         $wpdb->query(
-          "UPDATE pickup_service_drivers
-          SET certified = $certified
-          WHERE id IN ($driver_ids_str)"
+          "UPDATE pickup_service_orders
+          SET approved = $approved
+          WHERE id IN ($order_ids_str)"
         );
-        if ($certified === 1) {
+        if ($approved === 1) {
           /**
-           * @param Array $drivers Driver IDs
+           * @param Array $orders Order IDs
            */
-          do_action('drivers_application_approved', $drivers);
+          do_action('orders_application_approved', $orders);
         } else {
           /**
-           * @param Array $drivers Driver IDs
+           * @param Array $orders Order IDs
            */
-          do_action('drivers_application_declined', $drivers);
+          do_action('orders_application_declined', $orders);
         }
       }
     }

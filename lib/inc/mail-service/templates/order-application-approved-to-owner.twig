@@ -1,15 +1,11 @@
 {% extends "base/base.twig" %}
-{% block title %}订单更新提醒{% endblock %}
+{% block title %}订单通过审核{% endblock %}
 {% block message %}
-  <p>您有一个订单更新: </p>
+  <p>恭喜🎉🎉🎉 您的如下订单成功通过审核，请耐心等待司机接单。有司机接单我们会再次通知您。</p>
   <table style="border-top:#90caf9 solid 1px;border-bottom:#90caf9 solid 1px;">
     <tr>
-      <th width="130px">乘客姓名</th>
-      <td>{{passenger.name}}</td>
-    </tr>
-    <tr>
-      <th>微信</th>
-      <td>{{passenger.wechat}}</td>
+      <th width="100px">姓名</th>
+      <td>{{order.name}}</td>
     </tr>
     <tr>
       <th>到达时间</th>
@@ -40,6 +36,10 @@
       <td>{{order.note}}</td>
     </tr>
   </table>
-  <p>进入系统查看订单的详细信息。</p>
+  <div style="text-align: center">
+    <p>请扫码加我们小助手的微信，让小助手拉您进如接机答疑讨论群:</p>
+    <img src="{{ pickup_assistant_qr_code_url }}" alt="系统小助手微信" width="250px"/>
+  </div>
+
   <p>感谢您的支持。</p>
 {% endblock %}

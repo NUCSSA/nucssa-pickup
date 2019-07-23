@@ -9,6 +9,8 @@ export default class CreateEditOrderPage extends Component {
   constructor(props) {
     super(props);
 
+    this.refHuskyID = React.createRef();
+    this.refAdmissioNotice = React.createRef();
     this.refAddress = React.createRef();
     this.refFlightNum = React.createRef();
     this.refArrivalDate = React.createRef();
@@ -55,6 +57,7 @@ export default class CreateEditOrderPage extends Component {
       this.refLuggageCount.current.value = this.order.luggage_count;
       this.refUrgentContact.current.value = this.order.urgent_contact_info;
       this.refNote.current.value = this.order.note;
+      this.refHuskyID.current.value = this.order.huskyID;
     }
   }
 
@@ -65,35 +68,64 @@ export default class CreateEditOrderPage extends Component {
     const flight = this.refFlightNum.current.value;
     const arrivalDate = this.refArrivalDate.current.value;
     const arrivalTime = this.refArrivalTime.current.value;
+    const arrivalDatetime = moment(`${arrivalDate} ${arrivalTime}`, 'MMM DD, YYYY hh:mm A').format(datetimeSQLFormat);
     const terminal = this.refTerminal.current.value;
     const note = this.refNote.current.value;
     const companionCount = this.refCompanionCount.current.value;
     const luggageCount = this.refLuggageCount.current.value;
     const urgentContactInfo = this.refUrgentContact.current.value;
-
-    const arrivalDatetime = moment(new Date(`${arrivalDate} ${arrivalTime}`)).format(datetimeSQLFormat);
-
-    const data = { address, flight, arrivalDatetime, terminal, companionCount, luggageCount, urgentContactInfo, note, term: 'Fall 2019'};
-    console.log('data', data);
+    const huskyID = this.refHuskyID.current.value;
+    const term = 'Fall 2019';
+    // console.log('arrival Time', arrivalDatetime);
     // return;
 
-    let method = 'post';
-    if (this.isEditing) {
-      data.id = this.order.id;
-      data.passenger = this.order.passenger.id;
+    let data, method;
+    if (!this.isEditing){ // Creating a new order, posting file uploads
+      data = new FormData();
+      const fileAdmissioNotice = this.refAdmissioNotice.current.files[0];
+      data.append('address', address);
+      data.append('flight', flight);
+      data.append('arrivalDatetime', arrivalDatetime);
+      data.append('terminal', terminal);
+      data.append('companionCount', companionCount);
+      data.append('luggageCount', luggageCount);
+      data.append('urgentContactInfo', urgentContactInfo);
+      data.append('note', note);
+      data.append('term', term);
+      data.append('huskyID', huskyID);
+      data.append('admissionNotice', fileAdmissioNotice, 'admission_notice' + path.extname(fileAdmissioNotice.name));
+
+      method = 'post';
+
+    } else { // Updating an existing order, no need for file uploads, use normal PUT Request
+      data = {
+        address, flight, arrivalDatetime, terminal, companionCount, luggageCount, urgentContactInfo,
+        note, term, huskyID,
+        id: this.order.id,
+        passenger: this.order.passenger.id,
+      };
+
       method = 'put';
     }
-    axios[method](orderEndpoint, data)
+
+    const config = {
+      headers: {
+        'Content-Type': this.isEditing ? 'application/json' : 'multipart/form-data',
+        'X-WP-Nonce': nonce
+      }
+    };
+
+    axios[method](orderEndpoint, data, config)
       .then(res => {
-        // redirect back to home page with success message
-        this.props.history.push({
-          pathname: '/',
-          state: {
-            autoDismissMessage: <div className="card-panel green white-text center-align">
-              {this.isEditing ? '订单更新成功' : '您的接机请求提交成功! 请耐心等待司机接单！我们会以邮件通知您。'}
-            </div>
-          }
-        })
+        this.props.history.push('/');
+        // this.props.history.push({
+        //   pathname: '/',
+        //   state: {
+        //     autoDismissMessage: <div className="card-panel green white-text center-align">
+        //       {this.isEditing ? '订单更新成功' : '您的接机请求提交成功! 请耐心等待司机接单！我们会以邮件通知您。'}
+        //     </div>
+        //   }
+        // });
       })
       .catch(err => {
         // show error message
@@ -117,9 +149,38 @@ export default class CreateEditOrderPage extends Component {
       <main className="container">
         <div className="section row">
           <h5 className="center-align">{this.isEditing ? '修改订单' : '创建订单'}</h5>
+          <div className="description card red lighten-1 center-align">
+            <div className="card-content white-text">
+              <span className="card-title">请注意:</span>
+              <p>我们的接机服务仅为新生提供，需要提交录取通知书作为新生证明!</p>
+            </div>
+          </div>
           <div className="col s12">
             <div ref={this.refMessage} id="message"></div>
             <form action="" className="col s12" method="post" onSubmit={this.submitHandler}>
+              <div className="row">
+                <div className="input-field col s12">
+                  <i className="material-icons prefix">ID</i>
+                  <input ref={this.refHuskyID} type="number" id="huskyID" className="validate" required />
+                  <label htmlFor="huskyID">Husky ID(NUID)</label>
+                </div>
+              </div>
+              {
+                !this.isEditing &&
+                (
+                  <div className="row">
+                    <div className="input-field file-field col s12">
+                      <div className="btn">
+                        <span>录取通知书</span>
+                        <input type="file" ref={this.refAdmissioNotice} required accept=".jpg,.jpeg,.png" />
+                      </div>
+                      <div className="file-path-wrapper">
+                        <input className="file-path validate" type="text" placeholder="支持JPG, JPEG, PNG" />
+                      </div>
+                    </div>
+                  </div>
+                )
+              }
               <div className="row">
                 <div className="input-field col s12">
                   <i className="material-icons prefix">add_location</i>
@@ -135,15 +196,14 @@ export default class CreateEditOrderPage extends Component {
                 </div>
               </div>
               <div className="row">
-                <div className="input-field col s6">
-                  <i className="material-icons prefix">date_range</i>
-                  <input ref={this.refArrivalDate} type="text" id="arrival-date" className="datepicker validate" required />
-                  <label htmlFor="arrival-date">到达日期</label>
-                </div>
-                <div className="input-field col s6">
+                <div className="input-field col s7">
                   <i className="material-icons prefix">access_time</i>
+                  <input ref={this.refArrivalDate} type="text" id="arrival-date" className="datepicker validate" required />
+                  <label htmlFor="arrival-date">到达日期(Boston)</label>
+                </div>
+                <div className="input-field col s5">
                   <input ref={this.refArrivalTime} type="text" id="arrival-time" className="timepicker validate" required />
-                  <label htmlFor="arrival-time">时间</label>
+                  <label htmlFor="arrival-time">时间(Boston)</label>
                 </div>
               </div>
               <div className="row">

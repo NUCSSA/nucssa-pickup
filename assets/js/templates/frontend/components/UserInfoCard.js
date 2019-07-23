@@ -13,6 +13,12 @@ export default class UserInfoCard extends Component {
   }
 
   driverCard() {
+    // only show vehicle info row only when it exists.
+    const vehicleInfo = this.props.vehiclePlateNumber &&
+      `<tr>
+        <th><i class="material-icons">directions_car</i></th>
+        <td>${this.props.vehiclePlateNumber} | ${this.props.vehicleColor} | ${this.props.vehicleMakeAndModel}</td>
+      </tr>`;
     return `
       <div class="card-content">
         <table>
@@ -32,6 +38,7 @@ export default class UserInfoCard extends Component {
             <th><i class="material-icons">phone</i></th>
             <td>${this.props.phone}</td>
           </tr>
+          ${vehicleInfo}
         </table>
       </div>
     `;

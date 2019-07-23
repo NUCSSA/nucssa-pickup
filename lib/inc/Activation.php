@@ -48,7 +48,11 @@ users_table;
         huskyID VARCHAR(20) NOT NULL,
         husky_card VARCHAR(255) NOT NULL,
         drivers_license VARCHAR(255) NOT NULL,
+        vehicle_plate_number VARCHAR(20) NOT NULL,
+        vehicle_make_and_model VARCHAR(50) NOT NULL,
+        vehicle_color VARCHAR(20) NOT NULL,
         certified BOOL,
+        drop_count INT DEFAULT 0,
         term VARCHAR(10) NOT NULL,
 
         PRIMARY KEY (id),
@@ -73,6 +77,9 @@ drivers_table;
         drop_off_address VARCHAR(255) NOT NULL,
         urgent_contact_info VARCHAR(255) NOT NULL,
         note VARCHAR(2000),
+        huskyID VARCHAR(20) NOT NULL,
+        admission_notice VARCHAR(255) NOT NULL,
+        approved BOOL,
         term VARCHAR(10) NOT NULL,
 
         PRIMARY KEY (id),

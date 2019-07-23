@@ -1,15 +1,11 @@
 {% extends "base/base.twig" %}
-{% block title %}订单更新提醒{% endblock %}
+{% block title %}订单审核未通过{% endblock %}
 {% block message %}
-  <p>您有一个订单更新: </p>
+  <p>很抱歉，您的接机申请没有通过审核。</p>
   <table style="border-top:#90caf9 solid 1px;border-bottom:#90caf9 solid 1px;">
     <tr>
-      <th width="130px">乘客姓名</th>
-      <td>{{passenger.name}}</td>
-    </tr>
-    <tr>
-      <th>微信</th>
-      <td>{{passenger.wechat}}</td>
+      <th width="100px">姓名</th>
+      <td>{{order.name}}</td>
     </tr>
     <tr>
       <th>到达时间</th>
@@ -40,6 +36,7 @@
       <td>{{order.note}}</td>
     </tr>
   </table>
-  <p>进入系统查看订单的详细信息。</p>
+  <p>请注意：免费接机服务仅限新生，需要提交NUID和新生录取通知书进行订单审核。如果您觉得审核结果有误，请联系接机负责小组: </p>
+  <p style="text-align: center"><a href="mailto:pickup@nucssa.org" style="color: #1976d2;">pickup@nucssa.org</a></p>
   <p>感谢您的支持。</p>
 {% endblock %}

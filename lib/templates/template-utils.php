@@ -5,7 +5,7 @@ include_once(__DIR__.'/../inc/rest-endpoints/user.php');
 include_once(__DIR__.'/../inc/rest-endpoints/order.php');
 
 use function nucssa_core\utils\debug\file_log;
-use function nucssa_pickup\rest_endpoints\driver\{create as create_driver};
+use function nucssa_pickup\rest_endpoints\driver\{create as create_driver, show as show_driver, update as update_driver};
 use function nucssa_pickup\rest_endpoints\user\{show as show_user, update as update_user};
 use function nucssa_pickup\rest_endpoints\order\{
   create as create_order, index as list_orders, delete as delete_order, update as update_order,
@@ -114,8 +114,19 @@ function handle_json_request() {
         exit;
 
       case 'driver':
-        create_driver();
+        switch ($_SERVER['REQUEST_METHOD']){
+          case 'GET':
+            show_driver();
+            exit;
+          case 'POST':
+            create_driver();
+            exit;
+          case 'PUT':
+            update_driver();
+            exit;
+        }
         exit;
+
       case 'order':
         switch ($_SERVER['REQUEST_METHOD']) {
           case 'GET':

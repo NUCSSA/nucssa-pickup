@@ -16,6 +16,7 @@ function index() {
 }
 
 // GET
+// User as a passenger, getting the orders that she created
 function list_own_orders() {
   authenticate();
 
@@ -27,8 +28,7 @@ function list_own_orders() {
   foreach ($orders as $order) {
     // file_log('driver_id ', $order->driver);
 
-    $driver = $wpdb->get_row("SELECT * FROM pickup_service_users WHERE id = $order->driver");
-
+    $driver = $wpdb->get_row("SELECT * FROM pickup_service_drivers d, pickup_service_users u WHERE u.id = d.user_id AND u.id = $order->driver");
     $order->driver = $driver;
     $order->passenger = $passenger;
     // file_log('order', $order);
@@ -45,8 +45,12 @@ function list_managed_orders() {
 
   global $wpdb;
   $driver = $_SESSION['user'];
-  $orders = $wpdb->get_results("SELECT * FROM pickup_service_orders WHERE driver = $driver->id ORDER BY arrival_datetime DESC");
+  $orders = $wpdb->get_results("SELECT * FROM pickup_service_orders WHERE driver = $driver->id AND approved = 1 ORDER BY arrival_datetime DESC");
   // preload driver and passenger information
+  $driver_vehicle_info = $wpdb->get_row("SELECT * FROM pickup_service_drivers WHERE user_id = $driver->id");
+  $driver->vehicle_plate_number = $driver_vehicle_info->vehicle_plate_number;
+  $driver->vehicle_make_and_model = $driver_vehicle_info->vehicle_make_and_model;
+  $driver->vehicle_color = $driver_vehicle_info->vehicle_color;
   foreach ($orders as $order) {
     // file_log('passenger_id ', $order->passenger);
     $passenger = $wpdb->get_row("SELECT * FROM pickup_service_users WHERE id = $order->passenger");
@@ -66,7 +70,7 @@ function list_pending_orders() {
   authenticate();
 
   global $wpdb;
-  $orders = $wpdb->get_results("SELECT * FROM pickup_service_orders WHERE driver is NULL ORDER BY arrival_datetime DESC");
+  $orders = $wpdb->get_results("SELECT * FROM pickup_service_orders WHERE driver is NULL AND approved = 1 ORDER BY arrival_datetime DESC");
   wp_send_json_success($orders);
 }
 
@@ -130,6 +134,7 @@ function driver_drop_order() {
     null,
     '%d'
   );
+  $wpdb->query("UPDATE pickup_service_drivers SET drop_count = drop_count + 1 WHERE user_id = $driver->id AND term = 'Fall 2019'");
   /**
    * @param int $order_id
    * @param Object $driver Object containing driver user's contact information
@@ -142,110 +147,94 @@ function driver_drop_order() {
 function update() {
   authenticate();
 
+  $passenger = $_SESSION['user'];
+
   $json = file_get_contents('php://input');
   $data = json_decode($json, true);
-  // file_log('>>>', $data);
-  $passenger = $_SESSION['user'];
+
   if ($data['passenger'] != $passenger->id) wp_send_json_error(null, 401);
 
   global $wpdb;
-  $address = sanitize_text_field($data['address']);
-  $flight = sanitize_text_field($data['flight']);
-  $arrivalDatetime = sanitize_text_field($data['arrivalDatetime']);
-  $terminal = sanitize_text_field($data['terminal']);
-  $companionCount = sanitize_text_field($data['companionCount']);
-  $luggageCount = sanitize_text_field($data['luggageCount']);
-  $urgentContactInfo = sanitize_text_field($data['urgentContactInfo']);
-  $note = sanitize_text_field($data['note']);
-  $term = sanitize_text_field($data['term']);
-
+  $order = [
+    'drop_off_address' => sanitize_text_field($data['address']),
+    'flight' => sanitize_text_field($data['flight']),
+    'arrival_datetime' => sanitize_text_field($data['arrivalDatetime']),
+    'arrival_terminal' => sanitize_text_field($data['terminal']),
+    'companion_count' => sanitize_text_field($data['companionCount']),
+    'luggage_count' => sanitize_text_field($data['luggageCount']),
+    'urgent_contact_info' => sanitize_text_field($data['urgentContactInfo']),
+    'note' => sanitize_text_field($data['note']),
+    'term' => sanitize_text_field($data['term']),
+    'huskyID' => $data['huskyID'],
+  ];
   $resp = $wpdb->update(
     'pickup_service_orders',
-    [
-      'drop_off_address' => $address,
-      'flight' => $flight,
-      'arrival_datetime' => $arrivalDatetime,
-      'arrival_terminal' => $terminal,
-      'companion_count' => $companionCount,
-      'luggage_count' => $luggageCount,
-      'urgent_contact_info' => $urgentContactInfo,
-      'note' => $note,
-      'term' => $term,
-    ],
+    $order,
     [
       'id' => $data['id']
     ],
     '%s',
     '%d'
   );
-  if ($resp === false){
-    wp_send_json_error(null, 500);
-  } else {
-    $order = [
-      'id' => $data['id'],
-      'drop_off_address' => $address,
-      'flight' => $flight,
-      'arrival_datetime' => $arrivalDatetime,
-      'arrival_terminal' => $terminal,
-      'companion_count' => $companionCount,
-      'luggage_count' => $luggageCount,
-      'urgent_contact_info' => $urgentContactInfo,
-      'note' => $note,
-    ];
-    /**
-     * @param order
-     * @param passenger
-     * @param driver
-     */
-    do_action('order_updated_by_owner', $order, $passenger);
-    wp_send_json_success();
-  }
+
+  if ($resp === false) wp_send_json_error(null, 500);
+
+  $order['id'] = $data['id'];
+  /**
+   * @param order
+   * @param passenger
+   * @param driver
+   */
+  do_action('order_updated_by_owner', $order, $passenger);
+  wp_send_json_success();
 }
 
 // POST
 function create() {
   authenticate();
 
-  $json = file_get_contents('php://input');
-  $data = json_decode($json, true);
-
-  global $wpdb;
   $user = $_SESSION['user'];
 
-  $address = sanitize_text_field($data['address']);
-  $flight = sanitize_text_field($data['flight']);
-  $arrivalDatetime = sanitize_text_field($data['arrivalDatetime']);
-  $terminal = sanitize_text_field($data['terminal']);
-  $companionCount = sanitize_text_field($data['companionCount']);
-  $luggageCount = sanitize_text_field($data['luggageCount']);
-  $urgentContactInfo = sanitize_text_field($data['urgentContactInfo']);
-  $note = sanitize_text_field($data['note']);
-  $term = sanitize_text_field($data['term']);
-
-  $order_data = [
-    'passenger' => $user->id,
-    'drop_off_address' => $address,
-    'flight' => $flight,
-    'arrival_datetime' => $arrivalDatetime,
-    'arrival_terminal' => $terminal,
-    'companion_count' => $companionCount,
-    'luggage_count' => $luggageCount,
-    'urgent_contact_info' => $urgentContactInfo,
-    'note' => $note,
-    'term' => $term,
+  // collect info from POST and FILES, save to disk, record URL in DB
+  // override if exists
+  $_FILES['admissionNotice']['name'] = $user->email.'-'.$_FILES['admissionNotice']['name'];
+  $overrides = [
+    'test_form' => false,
+    // overwrite file
+    'unique_filename_callback' => function ($dir, $name, $ext) {
+      return $name;
+    },
   ];
+  $moveAdmissionNotice = wp_handle_upload($_FILES['admissionNotice'], $overrides);
 
-  $wpdb->insert(
-    'pickup_service_orders',
-    $order_data
-  );
-
-  /**
-   * @param $oder
-   * @param passenger
-   */
-  do_action('new_order_created', $order_data, $user);
-  wp_send_json_success();
+  if ($moveAdmissionNotice && !isset($moveAdmissionNotice['error'])) {
+    global $wpdb;
+    $order_data = [
+      'passenger' => $user->id,
+      'drop_off_address' => sanitize_text_field($_POST['address']),
+      'flight' => sanitize_text_field($_POST['flight']),
+      'arrival_datetime' => sanitize_text_field($_POST['arrivalDatetime']),
+      'arrival_terminal' => sanitize_text_field($_POST['terminal']),
+      'companion_count' => sanitize_text_field($_POST['companionCount']),
+      'luggage_count' => sanitize_text_field($_POST['luggageCount']),
+      'urgent_contact_info' => sanitize_text_field($_POST['urgentContactInfo']),
+      'note' => sanitize_text_field($_POST['note']),
+      'term' => sanitize_text_field($_POST['term']),
+      'huskyID' => $_POST['huskyID'],
+      'admission_notice' => $moveAdmissionNotice['url'],
+    ];
+    $wpdb->replace(
+      'pickup_service_orders',
+      $order_data
+    );
+    /**
+     * @param $oder
+     * @param passenger
+     */
+    do_action('new_order_created', $order_data, $user);
+    wp_send_json_success();
+  }
+  wp_send_json_error(null, 500);
 }
 
 // DELETE, user deletes her own order

@@ -11,6 +11,9 @@ export default class DriverApplicationPage extends Component {
       phone: '',
       carrier: '',
       huskyID: '',
+      vehiclePlateNumber: '',
+      vehicleMakeAndModel: '',
+      vehicleColor: '',
       term: 'Fall 2019',
     };
 
@@ -51,7 +54,7 @@ export default class DriverApplicationPage extends Component {
      *
      * REF: upload file with axios : https://github.com/axios/axios/issues/710
      */
-    const {phone, carrier, huskyID, term} = this.state;
+    const { phone, carrier, huskyID, vehiclePlateNumber, vehicleMakeAndModel, vehicleColor, term} = this.state;
     const fileHuskyCard = this.refHuskyCard.current.files[0];
     const fileLicense = this.refLicense.current.files[0];
 
@@ -59,6 +62,9 @@ export default class DriverApplicationPage extends Component {
     formData.append('phone', phone);
     formData.append('carrier', carrier);
     formData.append('huskyID', huskyID);
+    formData.append('vehiclePlateNumber', vehiclePlateNumber);
+    formData.append('vehicleMakeAndModel', vehicleMakeAndModel);
+    formData.append('vehicleColor', vehicleColor);
     formData.append('term', term);
     formData.append('huskycard', fileHuskyCard, 'huskycard' + path.extname(fileHuskyCard.name));
     formData.append('license', fileLicense, 'license' + path.extname(fileLicense.name));
@@ -135,6 +141,24 @@ export default class DriverApplicationPage extends Component {
                   <div className="file-path-wrapper">
                     <input className="file-path validate" type="text" placeholder="请上传驾照照片,支持JPG, JPEG, PNG" />
                   </div>
+                </div>
+              </div>
+              <div className="row">
+                <div className="input-field col s12">
+                  <input type="text" className="validate" id="app-vehicle-plate-number" value={this.state.vehiclePlateNumber} onChange={e => { this.setState({ vehiclePlateNumber: e.currentTarget.value }) }} style={{textTransform: 'uppercase'}} required />
+                  <label htmlFor="app-vehicle-plate-number">车牌号</label>
+                </div>
+              </div>
+              <div className="row">
+                <div className="input-field col s12">
+                  <input type="text" className="validate" id="app-vehicle-make-and-model" value={this.state.vehicleMakeAndModel} onChange={e => { this.setState({ vehicleMakeAndModel: e.currentTarget.value }) }} required />
+                  <label htmlFor="app-vehicle-make-and-model">汽车型号</label>
+                </div>
+              </div>
+              <div className="row">
+                <div className="input-field col s12">
+                  <input type="text" className="validate" id="app-vehicle-color" value={this.state.vehicleColor} onChange={e => { this.setState({ vehicleColor: e.currentTarget.value }) }} required />
+                  <label htmlFor="app-vehicle-color">汽车颜色</label>
                 </div>
               </div>
               <div className="row">

@@ -34,20 +34,75 @@ class MailService {
     $twig = self::initTwig();
     $context = self::baseContext();
 
-    // send to every valid driver
+    // send a notice to pickup admins
+    $context['user_display_name'] = '接机管理小组成员';
+    $message = $twig->render('new-order-created.twig', $context);
+    wp_mail('pickup@nucssa.org', '有新生订单待您审核', $message);
+  }
+  public static function orders_application_approved($order_ids) {
+    $twig = self::initTwig();
+    $context = self::baseContext();
+
     global $wpdb;
+    $order_ids_str = implode(',', $order_ids);
+    $orders = $wpdb->get_results("
+      SELECT name, email, flight, arrival_datetime, arrival_terminal, companion_count,
+          luggage_count, drop_off_address, urgent_contact_info, note
+      FROM pickup_service_orders o
+      LEFT JOIN pickup_service_users u
+      ON o.passenger = u.id
+      WHERE o.id IN ($order_ids_str)
+    ");
+
     $term = 'Fall 2019';
     $drivers = $wpdb->get_results("SELECT u.* FROM pickup_service_users as u RIGHT JOIN pickup_service_drivers as d ON d.user_id = u.id WHERE d.certified = TRUE AND d.term = '$term'");
-    foreach ($drivers as $driver) {
-      $context['user_display_name'] = $driver->name;
+    foreach ($orders as $order) {
+      // send to every valid driver
+      foreach ($drivers as $driver) {
+        $context['user_display_name'] = $driver->name;
+        $context['order'] = $order;
+        $message = $twig->render('order-application-approved-to-drivers.twig', $context);
+        wp_mail($driver->email, '新订单提醒', $message);
+      }
+
+      // send to order owner as well
+      $context['user_display_name'] = $order->name;
       $context['order'] = $order;
-      $message = $twig->render('new-order-created.twig', $context);
-      wp_mail($driver->email, '新订单提醒', $message);
+      $context['pickup_assistant_qr_code_url'] = NUCSSA_PICKUP_DIR_URL . '/public/images/pickup-assistant.png';
+      $message = $twig->render('order-application-approved-to-owner.twig', $context);
+      wp_mail($order->email, '订单通过审核', $message);
+    }
+  }
+  public static function orders_application_declined($order_ids) {
+    $twig = self::initTwig();
+    $context = self::baseContext();
+
+    global $wpdb;
+    $order_ids_str = implode(',', $order_ids);
+    $orders = $wpdb->get_results("
+      SELECT name, email, flight, arrival_datetime, arrival_terminal, companion_count,
+          luggage_count, drop_off_address, urgent_contact_info, note
+      FROM pickup_service_orders o
+      LEFT JOIN pickup_service_users u
+      ON o.passenger = u.id
+      WHERE o.id IN ($order_ids_str)
+    ");
+
+    foreach ($orders as $order) {
+      // send notice to every order owner
+      $context['user_display_name'] = $order->name;
+      $context['order'] = $order;
+      $message = $twig->render('order-application-declined-to-owner.twig', $context);
+      wp_mail($order->email, '订单审核未通过', $message);
     }
   }
   public static function order_picked_up_by_driver($order_id, $driver) {
     global $wpdb;
     $passenger = $wpdb->get_row("SELECT passenger.name, passenger.email FROM pickup_service_users as passenger, pickup_service_orders as o WHERE o.id = $order_id AND o.passenger = passenger.id");
+    $driver_vehicle_info = $wpdb->get_row("SELECT * FROM pickup_service_drivers WHERE user_id = $driver->id");
+    $driver->vehicle_plate_number = $driver_vehicle_info->vehicle_plate_number;
+    $driver->vehicle_make_and_model = $driver_vehicle_info->vehicle_make_and_model;
+    $driver->vehicle_color = $driver_vehicle_info->vehicle_color;
     $twig = self::initTwig();
     $context = self::baseContext();
     $context['user_display_name'] = $passenger->name;
@@ -70,6 +125,8 @@ class MailService {
   public static function order_updated_by_owner($order, $passenger) {
     global $wpdb;
     $driver = $wpdb->get_row("SELECT driver.name, driver.email FROM pickup_service_users as driver, pickup_service_orders as o WHERE o.id = {$order['id']} AND o.driver = driver.id");
+    if (!$driver) return;
+
     $twig = self::initTwig();
     $context = self::baseContext();
     $context['user_display_name'] = $driver->name;
@@ -97,7 +154,7 @@ class MailService {
     $context = self::baseContext();
     $context['user_display_name'] = '接机管理小组成员';
     $message = $twig->render('new-driver-application-submitted.twig', $context);
-    wp_mail('pickup@nucssa.org', '新司机待您审核', $message);
+    wp_mail('pickup@nucssa.org', '有新司机待您审核', $message);
   }
   public static function drivers_application_approved($driver_ids) {
     global $wpdb;
@@ -109,6 +166,7 @@ class MailService {
 
     foreach ($drivers as $driver) {
       $context['user_display_name'] = $driver->name;
+      $context['pickup_assistant_qr_code_url'] = NUCSSA_PICKUP_DIR_URL . '/public/images/pickup-assistant.png';
       $message = $twig->render('driver-application-approved.twig', $context);
       wp_mail($driver->email, '司机申请成功', $message);
     }
@@ -150,16 +208,17 @@ class MailService {
       'drop_off_address' => '666 Huntington Ave. ',
       'note' => 'Perfect😜 谢谢~',
     ];
+    $context['pickup_assistant_qr_code_url'] = NUCSSA_PICKUP_DIR_URL.'/public/images/pickup-assistant.png';
     $context['passenger'] = [
       'name' => '天惟',
       'wechat' => 'abcd123',
     ];
 
     $twig = self::initTwig();
-    // echo $twig->render('order-updated-by-owner.twig', $context);
+    echo $twig->render('driver-application-approved.twig', $context);
 
     $context['user_display_name'] = '接机管理小组成员';
-    echo $twig->render('new-driver-application-submitted.twig', $context);
+    // echo $twig->render('new-driver-application-submitted.twig', $context);
 
     // $message = $twig->render('templates/welcome-message.twig', $context);
     // wp_mail('lu.ji1@me.com', 'test', $message);

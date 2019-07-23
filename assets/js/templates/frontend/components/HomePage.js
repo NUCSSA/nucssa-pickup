@@ -14,6 +14,7 @@ export default class HomePage extends Component {
       ownOrders: [],
       user: {role: 'PASSENGER'},
       managedOrders: [], // when this user is a driver
+      hasOrderWaitingForApproval: false,
     };
 
     this.refPageActionsFAB = React.createRef();
@@ -37,7 +38,11 @@ export default class HomePage extends Component {
       resp = await axios.get(`${orderEndpoint}&user_role=passenger`);
       const ownOrders = resp.data.data;
       // console.log('ownOrders', ownOrders);
-      this.setState({ownOrders});
+      const hasOrderWaitingForApproval = ownOrders.some(order => {
+        // console.log('order', order);
+        return order.approved === null;
+      });
+      this.setState({ ownOrders, hasOrderWaitingForApproval });
 
       if (user.role == 'DRIVER') {
         resp = await axios.get(`${orderEndpoint}&user_role=driver`);
@@ -149,7 +154,7 @@ export default class HomePage extends Component {
                 <tr key={order.id}>
                   <td>{moment(order.arrival_datetime).format(datetimeDisplayFormat)}</td>
                   <td>{order.drop_off_address}</td>
-                  <td>{driverHTML(order.driver)}</td>
+                  <td>{order.approved === "0" ? <strong style={{color: 'red'}}>新生身份审核失败</strong> : driverHTML(order.driver)}</td>
                   <td>{actionCellHTML(order)}</td>
                 </tr>
               ))
@@ -257,6 +262,16 @@ export default class HomePage extends Component {
     );
   }
 
+  hasOrderWaitingForApprovalMessage() {
+    return (
+      <div className="card-panel red lighten-3 white-text center-align">
+        <p>新生身份审核中，请耐心等待</p>
+        <p>审核通过后订单才会提供给司机们接单</p>
+        <p>我们会通过邮件通知您审核结果</p>
+      </div>
+    );
+  }
+
   autoDismissMessage() {
     const refMessage = React.createRef();
     setTimeout(() => {refMessage.current.remove();}, 3000);
@@ -323,6 +338,7 @@ export default class HomePage extends Component {
       <main className="container">
         { this.props.location.state && this.props.location.state.autoDismissMessage && this.autoDismissMessage() }
         { this.state.user.role == 'PENDING_DRIVER' && this.pendingDriverMessage() }
+        { this.state.hasOrderWaitingForApproval && this.hasOrderWaitingForApprovalMessage() }
         { this.state.user.role == 'DRIVER' && this.managedOrdersSection() }
         { this.ownOrdersSection() }
         { this.actionsMenu() }

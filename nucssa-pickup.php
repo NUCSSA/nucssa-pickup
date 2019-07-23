@@ -18,14 +18,7 @@ defined('ABSPATH') || exit;
 include_once __DIR__ . '/vendor/autoload.php';
 
 /**
- * Global Constants
- */
-define('NUCSSA_PICKUP_DIR_URL', \plugin_dir_url(__FILE__));
-define('NUCSSA_PICKUP_DIR_PATH', \plugin_dir_path(__FILE__));
-define('NUCSSA_PICKUP_PLUGIN_FNAME', __FILE__);
-define('NUCSSA_PICKUP_PLUGIN_NAME', 'NUCSSA Airport Pickup');
-
-/**
  * There is nothing to look here, everything happens in the following file:
  */
+include_once 'lib/constants.php';
 require_once 'lib/bootstrap/index.php';

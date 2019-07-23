@@ -21,7 +21,7 @@ class AdminScripts
 
   private static function loadScripts($hook)
   {
-    if ($hook != 'toplevel_page_admin-menu-page-nucssa-pickup') {
+    if ($hook === 'toplevel_page_admin-menu-page-nucssa-pickup' || strpos($hook, 'pickup__order-review') === false) {
       return;
     }
 
@@ -38,8 +38,7 @@ class AdminScripts
   }
 
   private static function loadStyles($hook) {
-    // NUCSSA Core Plugin Page only Styles
-    if ($hook === 'toplevel_page_admin-menu-page-nucssa-pickup') {
+    if ($hook === 'toplevel_page_admin-menu-page-nucssa-pickup' || strpos($hook, 'pickup__order-review') !== false) {
       wp_enqueue_style(
         'nucssa_pickup_admin_page_style',
         NUCSSA_PICKUP_DIR_URL . 'public/css/admin-pickup-page.css',

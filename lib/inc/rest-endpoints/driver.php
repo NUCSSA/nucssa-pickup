@@ -7,6 +7,16 @@ if (!function_exists('wp_handle_upload')) {
   require_once(ABSPATH . 'wp-admin/includes/file.php');
 }
 
+// GET Request
+function show() {
+  authenticate();
+
+  global $wpdb;
+  $user = $_SESSION['user'];
+  $driver = $wpdb->get_row("SELECT * FROM pickup_service_drivers WHERE user_id = $user->id AND term = 'Fall 2019'");
+  wp_send_json_success(['driver' => $driver]);
+}
+
 // POST Request
 function create() {
   authenticate();
@@ -29,11 +39,14 @@ function create() {
     // file_log($_SESSION['user']);
     // file_log($_POST);
     global $wpdb;
-    $wpdb->insert('pickup_service_drivers', [
+    $wpdb->replace('pickup_service_drivers', [
       'user_id' => $user->id,
       'huskyID' => $_POST['huskyID'],
       'husky_card' => $moveHuskycard['url'],
       'drivers_license' => $moveLicense['url'],
+      'vehicle_plate_number' => $_POST['vehiclePlateNumber'],
+      'vehicle_make_and_model' => $_POST['vehicleMakeAndModel'],
+      'vehicle_color' => $_POST['vehicleColor'],
       'term' => $_POST['term'],
     ]);
     $wpdb->update(
@@ -59,4 +72,32 @@ function create() {
     file_log('Error', $moveHuskycard['error'] ?? $moveLicense['error']);
     wp_send_json_error($moveHuskycard['error'] ?? $moveLicense['error'], 500);
   }
+}
+
+// PUT Request
+function update() {
+  authenticate();
+
+  $json = file_get_contents('php://input');
+  $data = json_decode($json, true);
+  global $wpdb;
+  $user = $_SESSION['user'];
+  $vehiclePlateNumber = sanitize_text_field($data['vehiclePlateNumber']);
+  $vehicleMakeAndModel = sanitize_text_field($data['vehicleMakeAndModel']);
+  $vehicleColor = sanitize_text_field($data['vehicleColor']);
+  $wpdb->update(
+    'pickup_service_drivers',
+    [
+      'vehicle_plate_number' => $vehiclePlateNumber,
+      'vehicle_make_and_model' => $vehicleMakeAndModel,
+      'vehicle_color' => $vehicleColor,
+    ],
+    [
+      'user_id' => $user -> id,
+      'term' => 'Fall 2019'
+    ],
+    '%s',
+    ['%d', '%s']
+  );
+  wp_send_json_success();
 }

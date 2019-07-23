@@ -14,6 +14,7 @@ function show($email = NULL) {
 
   global $wpdb;
   $user = $_SESSION['user'];
+  $term = 'Fall 2019';
   // file_log($user);
   if ($email) {
     $user = $wpdb->get_row("SELECT * FROM pickup_service_users WHERE email = '$email'");
@@ -22,8 +23,6 @@ function show($email = NULL) {
   if ($user) {
     $driver = $wpdb->get_row("SELECT * FROM pickup_service_drivers WHERE user_id = $user->id");
     ob_clean(); // clear db error ouput in buffer
-    $user->isDriver = !!($driver);
-
     file_log('driver', $driver);
     if ($driver) {
       if ($driver->certified === NULL) {
