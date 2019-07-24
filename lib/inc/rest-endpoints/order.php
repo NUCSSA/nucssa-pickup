@@ -22,7 +22,7 @@ function list_own_orders() {
 
   global $wpdb;
   $passenger = $_SESSION['user'];
-  $orders = $wpdb->get_results("SELECT * FROM pickup_service_orders WHERE passenger = $passenger->id ORDER BY arrival_datetime DESC");
+  $orders = $wpdb->get_results("SELECT * FROM pickup_service_orders WHERE passenger = $passenger->id ORDER BY arrival_datetime ASC");
   // file_log('orders', $orders);
   // preload driver and passenger information
   foreach ($orders as $order) {
@@ -45,7 +45,7 @@ function list_managed_orders() {
 
   global $wpdb;
   $driver = $_SESSION['user'];
-  $orders = $wpdb->get_results("SELECT * FROM pickup_service_orders WHERE driver = $driver->id AND approved = 1 ORDER BY arrival_datetime DESC");
+  $orders = $wpdb->get_results("SELECT * FROM pickup_service_orders WHERE driver = $driver->id AND approved = 1 ORDER BY arrival_datetime ASC");
   // preload driver and passenger information
   $driver_vehicle_info = $wpdb->get_row("SELECT * FROM pickup_service_drivers WHERE user_id = $driver->id");
   $driver->vehicle_plate_number = $driver_vehicle_info->vehicle_plate_number;
@@ -70,7 +70,7 @@ function list_pending_orders() {
   authenticate();
 
   global $wpdb;
-  $orders = $wpdb->get_results("SELECT * FROM pickup_service_orders WHERE driver is NULL AND approved = 1 ORDER BY arrival_datetime DESC");
+  $orders = $wpdb->get_results("SELECT * FROM pickup_service_orders WHERE driver is NULL AND approved = 1 ORDER BY arrival_datetime ASC");
   wp_send_json_success($orders);
 }
 
