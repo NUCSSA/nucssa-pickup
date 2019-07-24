@@ -19,7 +19,7 @@ mix.sass('assets/scss/admin-pickup-page.scss', 'public/css')
       'node_modules/materialize-css/dist/js/materialize.min.js',
       'assets/js/all.js'
       ], 'public/js/all.js')
-    .react('assets/js/app.js', 'public/js/app.v4.js')
+    .react('assets/js/app.js', 'public/js/app.v5.js')
     .js('assets/js/admin.js', 'public/js')
     .copyDirectory('assets/images/', 'public/images/')
     .browserSync({

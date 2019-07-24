@@ -151,7 +151,17 @@ class OrdersListTable extends WP_List_Table {
     return "$item->phone<br/>$item->carrier";
   }
   public function column_admission_notice($item) {
-    return "<a href='$item->admission_notice' data-featherlight='image'><img class='admin-pickup-entry-image' src='$item->admission_notice' /></a>";
+    if ($item->admission_notice) {
+      // display PDF in iframe
+      $ext = pathinfo($item->admission_notice, PATHINFO_EXTENSION);
+      if (strtolower($ext) == 'pdf') {
+        return "<a href='$item->admission_notice' data-featherlight='iframe' data-featherlight-iframe-allowfullscreen='true' data-featherlight-iframe-width='900' data-featherlight-iframe-max-width='100%' data-featherlight-iframe-height='900' data-featherlight-iframe-max-height='95vh'>View PDF</a>";
+      } else {
+        return "<a href='$item->admission_notice' data-featherlight='image'><img class='admin-pickup-entry-image' src='$item->admission_notice' /></a>";
+      }
+    } else {
+      return "--";
+    }
   }
   public function column_approved($item) {
     switch ($item->approved) {
@@ -210,6 +220,8 @@ class OrdersListTable extends WP_List_Table {
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       $referer = wp_get_referer();
       wp_redirect($referer);
+      exit();
+    } else {
       exit();
     }
   }

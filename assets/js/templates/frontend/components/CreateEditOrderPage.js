@@ -172,10 +172,10 @@ export default class CreateEditOrderPage extends Component {
                     <div className="input-field file-field col s12">
                       <div className="btn">
                         <span>录取通知书</span>
-                        <input type="file" ref={this.refAdmissioNotice} required accept=".jpg,.jpeg,.png" />
+                        <input type="file" ref={this.refAdmissioNotice} required accept=".jpg,.jpeg,.png,.pdf" />
                       </div>
                       <div className="file-path-wrapper">
-                        <input className="file-path validate" type="text" placeholder="支持JPG, JPEG, PNG" />
+                        <input className="file-path validate" type="text" placeholder="支持JPG, JPEG, PNG, PDF" />
                       </div>
                     </div>
                   </div>

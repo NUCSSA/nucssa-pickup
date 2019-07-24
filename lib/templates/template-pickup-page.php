@@ -61,7 +61,7 @@ process_submission_data(); // login and registration form post
 </body>
 <script src="<?php echo NUCSSA_PICKUP_DIR_URL . 'public/js/all.js'; ?>"></script>
 <?php if (is_user_logged_in()) { ?>
-  <script src="<?php echo NUCSSA_PICKUP_DIR_URL . 'public/js/app.v4.js'; ?>"></script>
+  <script src="<?php echo NUCSSA_PICKUP_DIR_URL . 'public/js/app.v5.js'; ?>"></script>
 <?php } ?>
 <?php enableBrowserSyncOnDebugMode(); ?>
 

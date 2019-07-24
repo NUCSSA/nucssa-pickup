@@ -215,6 +215,8 @@ class DriversListTable extends WP_List_Table {
       $referer = wp_get_referer();
       wp_redirect($referer);
       exit();
+    } else {
+      exit();
     }
   }
 }
