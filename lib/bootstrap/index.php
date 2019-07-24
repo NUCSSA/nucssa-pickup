@@ -15,14 +15,16 @@ add_action('phpmailer_init', ['nucssa_pickup\mail_service\MailService', 'sendGri
 add_filter('wp_mail_content_type', ['nucssa_pickup\mail_service\MailService', 'enalbeHTMLEmail']);
 
 // Email Notifications
-add_action('order_picked_up_by_driver', ['nucssa_pickup\mail_service\MailService', 'order_picked_up_by_driver'], 10, 2);
-add_action('order_dropped_by_driver', ['nucssa_pickup\mail_service\MailService', 'order_dropped_by_driver'], 10, 2);
-add_action('order_updated_by_owner', ['nucssa_pickup\mail_service\MailService', 'order_updated_by_owner'], 10, 2);
-add_action('order_deleted_by_owner', ['nucssa_pickup\mail_service\MailService', 'order_deleted_by_owner'], 10, 2);
-add_action('np_user_created', ['nucssa_pickup\mail_service\MailService', 'np_user_created']);
-add_action('new_order_created', ['nucssa_pickup\mail_service\MailService', 'new_order_created'], 10, 2);
-add_action('new_driver_application_submitted', ['nucssa_pickup\mail_service\MailService', 'new_driver_application_submitted']);
-add_action('drivers_application_approved', ['nucssa_pickup\mail_service\MailService', 'drivers_application_approved']);
-add_action('drivers_application_declined', ['nucssa_pickup\mail_service\MailService', 'drivers_application_declined']);
-add_action('orders_application_approved', ['nucssa_pickup\mail_service\MailService', 'orders_application_approved']);
-add_action('orders_application_declined', ['nucssa_pickup\mail_service\MailService', 'orders_application_declined']);
+if (!WP_DEBUG) {
+  add_action('order_picked_up_by_driver', ['nucssa_pickup\mail_service\MailService', 'order_picked_up_by_driver'], 10, 2);
+  add_action('order_dropped_by_driver', ['nucssa_pickup\mail_service\MailService', 'order_dropped_by_driver'], 10, 2);
+  add_action('order_updated_by_owner', ['nucssa_pickup\mail_service\MailService', 'order_updated_by_owner'], 10, 2);
+  add_action('order_deleted_by_owner', ['nucssa_pickup\mail_service\MailService', 'order_deleted_by_owner'], 10, 2);
+  add_action('np_user_created', ['nucssa_pickup\mail_service\MailService', 'np_user_created']);
+  add_action('new_order_created', ['nucssa_pickup\mail_service\MailService', 'new_order_created'], 10, 2);
+  add_action('new_driver_application_submitted', ['nucssa_pickup\mail_service\MailService', 'new_driver_application_submitted']);
+  add_action('drivers_application_approved', ['nucssa_pickup\mail_service\MailService', 'drivers_application_approved']);
+  add_action('drivers_application_declined', ['nucssa_pickup\mail_service\MailService', 'drivers_application_declined']);
+  add_action('orders_application_approved', ['nucssa_pickup\mail_service\MailService', 'orders_application_approved']);
+  add_action('orders_application_declined', ['nucssa_pickup\mail_service\MailService', 'orders_application_declined']);
+}

@@ -129,11 +129,11 @@ class OrdersListTable extends WP_List_Table {
 
   public function column_name($item) {
     $actions = [
-      "<a href='".wp_nonce_url("?page={$_REQUEST['page']}&action=approve&order=$item->order_id", 'bulk-orders') . "'>通过</a>",
-      "<a class='row-action decline' href='".wp_nonce_url("?page={$_REQUEST['page']}&action=decline&order=$item->order_id", 'bulk-orders')."'>拒绝</a>",
+      "<a href='".wp_nonce_url("?page={$_REQUEST['page']}&action=approve&order=$item->order_id&noheader=true", 'bulk-orders') . "'>通过</a>",
+      "<a class='row-action decline' href='".wp_nonce_url("?page={$_REQUEST['page']}&action=decline&order=$item->order_id&noheader=true", 'bulk-orders')."'>拒绝</a>",
     ];
     $row_actions = $this->row_actions($actions);
-    return "$item->name $row_actions";
+    return "<strong>$item->name</strong> $row_actions";
   }
   public function column_order_id($item) {
     return $item->order_id;
@@ -170,11 +170,11 @@ class OrdersListTable extends WP_List_Table {
     $action = $this->current_action();
     if (!$action) return;
 
-    $nonce = $_GET['_wpnonce'];
+    $nonce = $_REQUEST['_wpnonce'];
     if (!wp_verify_nonce($nonce, 'bulk-orders')) {
       $this->invalid_nonce_redirect();
     } else {
-      $orders = is_array($_GET['order']) ? $_GET['order'] : [$_GET['order']];
+      $orders = is_array($_REQUEST['order']) ? $_REQUEST['order'] : [$_REQUEST['order']];
       $order_ids_str = implode(',', $orders);
       $approved = null;
       switch ($action) {
@@ -204,6 +204,13 @@ class OrdersListTable extends WP_List_Table {
           do_action('orders_application_declined', $orders);
         }
       }
+    }
+
+    // Redirect back to original url if is row action
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+      $referer = wp_get_referer();
+      wp_redirect($referer);
+      exit();
     }
   }
 }

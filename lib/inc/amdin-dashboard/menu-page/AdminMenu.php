@@ -41,7 +41,7 @@ class AdminMenu {
         <li class="failed"><a class="<?php echo $approval_status == 'failed' ? 'current' : ''; ?>" href="<?php echo "admin.php?page=$plugin_page_slug&approval_status=failed" ?>">被拒的</a></li>
         <li class="all"><a class="<?php echo $approval_status == 'all' ? 'current' : ''; ?>" href="<?php echo "admin.php?page=$plugin_page_slug&approval_status=all" ?>">所有订单</a></li>
       </ul>
-      <form method="get">
+      <form method="post">
         <p class="search-box">
           <input type="search" name="s" value="<?php echo $_REQUEST['s'] ?? '' ?>" />
           <input type="submit" class="button" value="搜索乘客订单" />
@@ -73,7 +73,7 @@ class AdminMenu {
         <li class="failed"><a class="<?php echo $approval_status == 'failed' ? 'current' : ''; ?>" href="<?php echo "admin.php?page=$plugin_page_slug&approval_status=failed" ?>">被拒的</a></li>
         <li class="all"><a class="<?php echo $approval_status == 'all' ? 'current' : ''; ?>" href="<?php echo "admin.php?page=$plugin_page_slug&approval_status=all" ?>">所有司机</a></li>
       </ul>
-      <form method="get">
+      <form method="post">
         <p class="search-box">
           <input type="search" name="s" value="<?php echo $_REQUEST['s'] ?? '' ?>" />
           <input type="submit" class="button" value="Search Drivers" />

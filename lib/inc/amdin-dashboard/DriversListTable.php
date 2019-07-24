@@ -130,11 +130,11 @@ class DriversListTable extends WP_List_Table {
 
   public function column_name($item) {
     $actions = [
-      "<a href='".wp_nonce_url("?page={$_REQUEST['page']}&action=approve&driver=$item->driver_id", 'bulk-drivers') . "'>通过</a>",
-      "<a class='row-action decline' href='".wp_nonce_url("?page={$_REQUEST['page']}&action=decline&driver=$item->driver_id", 'bulk-drivers')."'>拒绝</a>",
+      "<a href='".wp_nonce_url("?page={$_REQUEST['page']}&action=approve&driver=$item->driver_id&noheader=true", 'bulk-drivers') . "'>通过</a>",
+      "<a class='row-action decline' href='".wp_nonce_url("?page={$_REQUEST['page']}&action=decline&driver=$item->driver_id&noheader=true", 'bulk-drivers')."'>拒绝</a>",
     ];
     $row_actions = $this->row_actions($actions);
-    return "$item->name $row_actions";
+    return "<strong>$item->name</strong> $row_actions";
   }
   public function column_driver_id($item) {
     return $item->driver_id;
@@ -174,11 +174,11 @@ class DriversListTable extends WP_List_Table {
     $action = $this->current_action();
     if (!$action) return;
 
-    $nonce = $_GET['_wpnonce'];
+    $nonce = $_REQUEST['_wpnonce'];
     if (!wp_verify_nonce($nonce, 'bulk-drivers')) {
       $this->invalid_nonce_redirect();
     } else {
-      $drivers = is_array($_GET['driver']) ? $_GET['driver'] : [$_GET['driver']];
+      $drivers = is_array($_REQUEST['driver']) ? $_REQUEST['driver'] : [$_REQUEST['driver']];
       $driver_ids_str = implode(',', $drivers);
       $certified = null;
       switch ($action) {
@@ -208,6 +208,13 @@ class DriversListTable extends WP_List_Table {
           do_action('drivers_application_declined', $drivers);
         }
       }
+    }
+
+    // Redirect back to original url if is row action
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+      $referer = wp_get_referer();
+      wp_redirect($referer);
+      exit();
     }
   }
 }
