@@ -1,4 +1,24 @@
 ### Screenshots
+#### Admin Dashboard (司机审核、新生审核)
+![admin dashboard](README/admin_dashboard.png)
+
+#### 创建订单
+<img src="README/创建订单+申请司机菜单.png" width="300" />
+<img src="README/创建订单.png" width="300" />
+
+#### 司机报名
+<img src="README/司机报名表.png" width="300" />
+
+#### 司机抢单
+<img src="README/抢单菜单.png" width="300" />
+![](README/抢单页面.png)
+
+
+#### 司机查看自己抢到的订单
+![抢到的单](README/view_managed_orders.gif)
+
+#### 其他截图
+<img alt="新生订单完成提交" src="README/finish_ordering.png" width="300" />
 
 ### Installation Instructions
 0. Install this plugin to `$WordPress$/wp-content/plugins` directory
