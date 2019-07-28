@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import path from 'path';
 import axios from 'axios';
-import { userEndpoint, driverEndpoint, nonce } from '../../../utils/constants';
+import { userEndpoint, driverEndpoint, nonce, pickupAdminEmail } from '../../../utils/constants';
 
 export default class DriverApplicationPage extends Component {
   constructor(props) {
@@ -86,7 +86,7 @@ export default class DriverApplicationPage extends Component {
           message: (
             <div className="card-panel red lighten-3 white-text center-align">
               <p>表格提交失败，稍后重试.</p>
-              <p>如果一直不成功，直接发邮件联系我们<a href="mailto:pickup@nucssa.org">pickup@nucssa.org</a></p>
+              <p>如果一直不成功，直接发邮件联系我们<a href={`mailto:${pickupAdminEmail}`}>{pickupAdminEmail}</a></p>
             </div>
           )
         });

@@ -3,14 +3,14 @@
 // echo \nucssa_pickup\mail_service\MailService::testHTML();
 // exit;
 
-include_once('template-utils.php');
+include_once('template-pickup-page-utils.php');
 
-use function nucssa_pickup\templates\template_utils\is_user_logged_in;
+use function nucssa_pickup\templates\template_pickup_page_utils\is_user_logged_in;
 use function nucssa_core\utils\debug\file_log;
-use function nucssa_pickup\templates\template_utils\process_submission_data;
-use function nucssa_pickup\templates\template_utils\insert_local_js;
-use function nucssa_pickup\templates\template_utils\enableBrowserSyncOnDebugMode;
-use function nucssa_pickup\templates\template_utils\handle_json_request;
+use function nucssa_pickup\templates\template_pickup_page_utils\process_submission_data;
+use function nucssa_pickup\templates\template_pickup_page_utils\insert_local_js;
+use function nucssa_pickup\templates\template_pickup_page_utils\enableBrowserSyncOnDebugMode;
+use function nucssa_pickup\templates\template_pickup_page_utils\handle_json_request;
 
 session_start();
 
@@ -43,7 +43,7 @@ process_submission_data(); // login and registration form post
 
 <body>
   <a href="<?php the_permalink(); ?>">
-    <h4 class="center-align red-text text-darken-4 card-panel">NUCSSA迎新生接机系统</h4>
+    <h4 class="center-align red-text text-darken-4 card-panel" style="box-shadow:none;border-bottom: solid rgba(0,0,0,0.05) 1px">NUCSSA迎新生接机系统</h4>
   </a>
   <?php
   if (!is_user_logged_in()) {
@@ -61,7 +61,7 @@ process_submission_data(); // login and registration form post
 </body>
 <script src="<?php echo NUCSSA_PICKUP_DIR_URL . 'public/js/all.js'; ?>"></script>
 <?php if (is_user_logged_in()) { ?>
-  <script src="<?php echo NUCSSA_PICKUP_DIR_URL . 'public/js/app.v5.js'; ?>"></script>
+  <script src="<?php echo NUCSSA_PICKUP_DIR_URL . 'public/js/app.v10.js'; ?>"></script>
 <?php } ?>
 <?php enableBrowserSyncOnDebugMode(); ?>
 

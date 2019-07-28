@@ -1,7 +1,7 @@
 <?php
 namespace nucssa_pickup\rest_endpoints\driver;
 use function nucssa_core\utils\debug\file_log;
-use function nucssa_pickup\templates\template_utils\authenticate;
+use function nucssa_pickup\templates\template_pickup_page_utils\authenticate;
 
 if (!function_exists('wp_handle_upload')) {
   require_once(ABSPATH . 'wp-admin/includes/file.php');

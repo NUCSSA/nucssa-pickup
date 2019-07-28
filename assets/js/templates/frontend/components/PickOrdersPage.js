@@ -53,7 +53,7 @@ export default class DriverApplicationPage extends Component {
         })
     }
     return (<>
-      <a className="btn" onClick={pickOrder}>接单</a>
+      <a className="btn" onClick={pickOrder} style={{minWidth: '65px'}}>接单</a>
     </>);
   }
 
@@ -66,9 +66,10 @@ export default class DriverApplicationPage extends Component {
             <thead>
               <tr>
                 <th>飞机到达时间</th>
-                <th>随行家属人数</th>
-                <th>行李件数</th>
+                <th>随行人数</th>
+                <th>行李数</th>
                 <th>目的地址</th>
+                <th>备注</th>
                 <th>订单操作</th>
               </tr>
             </thead>
@@ -80,6 +81,7 @@ export default class DriverApplicationPage extends Component {
                     <td>{order.companion_count}</td>
                     <td>{order.luggage_count}</td>
                     <td>{order.drop_off_address}</td>
+                    <td>{order.note}</td>
                     <td>{this.actionCellHTML(order)}</td>
                   </tr>
                 ))

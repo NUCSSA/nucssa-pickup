@@ -2,6 +2,6 @@
 {% block title %}司机申请失败{% endblock %}
 {% block message %}
   <p>很遗憾您的司机申请没有通过审核，如有疑问或补充资料，请直接邮件联系接机组的工作人员: </p>
-  <p style="text-align: center"><a href="mailto:pickup@nucssa.org" style="color: #1976d2;">pickup@nucssa.org</a></p>
+  <p style="text-align: center"><a href="mailto:{{constant('PICKUP_ADMIN_EMAIL')}}" style="color: #1976d2;">{{constant('PICKUP_ADMIN_EMAIL')}}</a></p>
   <p>感谢您的支持。</p>
 {% endblock %}

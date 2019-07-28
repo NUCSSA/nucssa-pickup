@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
 import path from 'path';
 import axios from 'axios';
-import { orderEndpoint, nonce } from '../../../utils/constants';
+import { orderEndpoint, nonce, pickupAdminEmail } from '../../../utils/constants';
 import moment from 'moment';
 import { datetimeSQLFormat } from '../../../utils/utils';
 
 export default class CreateEditOrderPage extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      uploading: false
+    };
 
     this.refHuskyID = React.createRef();
     this.refAdmissioNotice = React.createRef();
@@ -63,6 +67,8 @@ export default class CreateEditOrderPage extends Component {
 
   submitHandler(e) {
     e.preventDefault();
+    // disable submit button
+    this.setState({uploading: true});
 
     const address = this.refAddress.current.value;
     const flight = this.refFlightNum.current.value;
@@ -128,10 +134,11 @@ export default class CreateEditOrderPage extends Component {
         // });
       })
       .catch(err => {
+        this.setState({uploading: false});
         // show error message
         this.refMessage.current.innerHTML = `<div class="card-panel red lighten-3 white-text center-align">
           <p>提交失败，稍后重试.</p>
-          <p>如果一直不成功，直接发邮件联系我们 <a href="mailto:pickup@nucssa.org">pickup@nucssa.org</a></p>
+          <p>如果一直不成功，直接发邮件联系我们 <a href="mailto:${pickupAdminEmail}">${pickupAdminEmail}</a></p>
         </div>`;
 
         console.log('Error', err);
@@ -252,7 +259,7 @@ export default class CreateEditOrderPage extends Component {
                 <button className="btn-large yellow darken-3 waves-effect waves-light" type="button" onClick={this.goHome}>
                   返回 <i className="material-icons left">arrow_back</i>
                 </button>
-                <button className="btn-large blue waves-effect waves-light" type="submit" style={{ marginLeft: '5px' }}>
+                <button disabled={this.state.uploading} className="btn-large blue waves-effect waves-light" type="submit" style={{ marginLeft: '5px' }}>
                   提交 <i className="material-icons right">send</i>
                 </button>
               </div>

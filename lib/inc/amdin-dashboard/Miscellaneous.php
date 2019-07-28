@@ -33,6 +33,8 @@ class Miscellaneous
   public static function addPickupPageTemplate($template) {
     if (is_page_template('template-pickup-page.php')){
       $template = NUCSSA_PICKUP_DIR_PATH . 'lib/templates/template-pickup-page.php';
+    } else if (is_page_template('template-pickup-feedback-page.php')) {
+      $template = NUCSSA_PICKUP_DIR_PATH . 'lib/templates/template-pickup-feedback-page.php';
     }
     return $template;
   }

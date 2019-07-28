@@ -37,7 +37,7 @@ class MailService {
     // send a notice to pickup admins
     $context['user_display_name'] = '接机管理小组成员';
     $message = $twig->render('new-order-created.twig', $context);
-    wp_mail('pickup@nucssa.org', '有新生订单待您审核', $message);
+    wp_mail(PICKUP_ADMIN_EMAIL, '有新生订单待您审核', $message);
   }
   public static function orders_application_approved($order_ids) {
     $twig = self::initTwig();
@@ -154,7 +154,7 @@ class MailService {
     $context = self::baseContext();
     $context['user_display_name'] = '接机管理小组成员';
     $message = $twig->render('new-driver-application-submitted.twig', $context);
-    wp_mail('pickup@nucssa.org', '有新司机待您审核', $message);
+    wp_mail(PICKUP_ADMIN_EMAIL, '有新司机待您审核', $message);
   }
   public static function drivers_application_approved($driver_ids) {
     global $wpdb;
@@ -183,6 +183,58 @@ class MailService {
       $context['user_display_name'] = $driver->name;
       $message = $twig->render('driver-application-declined.twig', $context);
       wp_mail($driver->email, '司机申请失败', $message);
+    }
+  }
+  public static function request_feedbacks_for_finished_orders() {
+    global $wpdb;
+
+    // find finished valid orders that does't have feedback notices sent yet
+    // preload with passenger and driver info
+    $query = "
+      SELECT o.*, p.name AS passenger_name, p.email AS passenger_email,
+             d.name AS driver_name, d.email AS driver_email
+      FROM pickup_service_orders o
+      LEFT JOIN pickup_service_users p
+      ON o.passenger = p.id
+      LEFT JOIN pickup_service_users d
+      ON o.driver = d.id
+      WHERE o.driver IS NOT NULL
+      AND o.approved = TRUE
+      AND o.feedback_sent = FALSE
+      AND TIMESTAMPDIFF(HOUR, o.arrival_datetime, NOW()) >= 3
+    ";
+    $orders_for_feedbacks = $wpdb->get_results($query);
+    if (!empty($orders_for_feedbacks)) {
+      $twig = self::initTwig();
+      $context = self::baseContext();
+
+      foreach ($orders_for_feedbacks as $order) {
+        $feedback_page_url = \get_the_permalink(get_option('nucssa_pickup_service_feedback_page_id'));
+        // To Passenger
+        $context['user_display_name'] = $order->passenger_name;
+        $context['feedback_url'] = $feedback_page_url.'?request='.urlencode(\base64_encode(json_encode([
+          'order_id' => $order->id,
+          'from_role' => 'passenger'
+        ])));
+        $message = $twig->render('feedback-request-to-passenger.twig', $context);
+        wp_mail($order->passenger_email, '为您的订单打分', $message);
+
+
+        // To Driver
+        $context['user_display_name'] = $order->driver_name;
+        $context['feedback_url'] = $feedback_page_url.'?request='.urlencode(\base64_encode(json_encode([
+          'order_id' => $order->id,
+          'from_role' => 'driver'
+        ])));
+        $context['passenger_name'] = $order->passenger_name;
+        $context['order'] = $order;
+        $message = $twig->render('feedback-request-to-driver.twig', $context);
+        wp_mail($order->driver_email, '请为这个订单打分', $message);
+      }
+
+      // update order.feedback_sent to TRUE in db
+      $order_ids_str = implode(',', array_map(function($order){return $order->id;}, $orders_for_feedbacks));
+      $wpdb->query("UPDATE pickup_service_orders SET feedback_sent = TRUE WHERE id IN ($order_ids_str)");
     }
   }
 

@@ -1,0 +1,26 @@
+{% extends "base/base.twig" %}
+{% block title %}请为这个订单打分{% endblock %}
+{% block message %}
+  <p>感谢您的热心帮助把这位小哈安全送到，为他们的留学生涯营造了一个美好的开端。</p>
+  <p>让学弟学妹们初来乍到就不感到陌生，对未来充满期待。</p>
+  <table style="border-top:#90caf9 solid 1px;border-bottom:#90caf9 solid 1px;">
+    <tr>
+      <th width="130px">新生姓名</th>
+      <td>{{passenger_name}}</td>
+    </tr>
+    <tr>
+      <th>到达时间</th>
+      <td>{{order.arrival_datetime}}</td>
+    </tr>
+    <tr>
+      <th>送达地址</th>
+      <td>{{order.drop_off_address}}</td>
+    </tr>
+  </table>
+
+  <p>请点击<a href="{{ feedback_url }}">这个链接</a>为您接到的新生和接机活动打分以及提出宝贵建议。</p>
+  <p>我们会认真阅读每一个反馈，挖掘活动的提升改进方向。</p>
+  <br />
+  <p>谢谢!</p>
+  <p>NUCSSA</p>
+{% endblock %}

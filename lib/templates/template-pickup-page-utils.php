@@ -1,5 +1,5 @@
 <?php
-namespace nucssa_pickup\templates\template_utils;
+namespace nucssa_pickup\templates\template_pickup_page_utils;
 include_once(__DIR__.'/../inc/rest-endpoints/driver.php');
 include_once(__DIR__.'/../inc/rest-endpoints/user.php');
 include_once(__DIR__.'/../inc/rest-endpoints/order.php');
@@ -70,6 +70,7 @@ function insert_local_js() {
     'userEndpoint' => home_url("$wp->request?json&endpoint=user"),
     'driverEndpoint' => home_url("$wp->request?json&endpoint=driver"),
     'orderEndpoint' => home_url("$wp->request?json&endpoint=order"),
+    'pickupAdminEmail' => PICKUP_ADMIN_EMAIL,
   ];
 
   echo '<script>window.pickup_data = '.json_encode($pickup_data).'</script>';
@@ -87,21 +88,9 @@ function authenticate() {
 }
 
 function handle_json_request() {
-  // file_log('>>>');
-  // file_log($_SERVER);
-  // file_log($_SESSION['user']);
-  // file_log($_FILES);
-  // file_log($_POST);
-  // file_log($_GET);
-  // file_log($_REQUEST);
-  // file_log($_SERVER);
   if (isset($_REQUEST['endpoint'])) {
     switch ($_REQUEST['endpoint']) {
       case 'user':
-        // file_log($_SERVER['REQUEST_METHOD']);
-        // file_log($_SERVER);
-        // file_log($_POST, 'post');
-        // file_log($_GET, 'get');
         switch ($_SERVER['REQUEST_METHOD']){
           case 'GET':
             show_user($_REQUEST['email'] ?? NULL);

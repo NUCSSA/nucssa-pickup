@@ -13,6 +13,7 @@ class Activation
   {
     self::migrate();        // Adds DB tables for pickup info persistence
     self::addPickupPage();  // Adds the frontend pickup page (nucssa.org/pickup)
+    self::addPickupFeedbackPage(); // (nucssa.org/pickup_feedback)
     self::addPickupAdminRolesAndPerms();
   }
 
@@ -44,6 +45,7 @@ users_table;
     $create_drivers_table = <<<drivers_table
       CREATE TABLE IF NOT EXISTS pickup_service_drivers (
         id BIGINT NOT NULL AUTO_INCREMENT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         user_id BIGINT NOT NULL,
         huskyID VARCHAR(20) NOT NULL,
         husky_card VARCHAR(255) NOT NULL,
@@ -67,6 +69,8 @@ drivers_table;
     $create_orders_table = <<<orders_table
       CREATE TABLE IF NOT EXISTS pickup_service_orders (
         id BIGINT NOT NULL AUTO_INCREMENT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         passenger BIGINT NOT NULL,
         driver BIGINT,
         flight VARCHAR(255) NOT NULL,
@@ -81,6 +85,7 @@ drivers_table;
         admission_notice VARCHAR(255) NOT NULL,
         approved BOOL,
         term VARCHAR(10) NOT NULL,
+        feedback_sent BOOLEAN DEFAULT FALSE,
 
         PRIMARY KEY (id),
         FOREIGN KEY (passenger)
@@ -93,11 +98,29 @@ drivers_table;
       ) $charset_collate;
 orders_table;
 
+    $create_feedback_table = <<<feedback_table
+        CREATE TABLE IF NOT EXISTS pickup_service_feedback (
+          id BIGINT NOT NULL AUTO_INCREMENT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          order_id BIGINT,
+          driver_feedback VARCHAR(5000),
+          passenger_feedback VARCHAR(5000),
+
+          PRIMARY KEY (id),
+          FOREIGN KEY (order_id)
+            REFERENCES pickup_service_orders (id)
+            ON DELETE SET NULL,
+          UNIQUE KEY (order_id),
+          KEY idx_feedback_table_order_id (order_id)
+        ) $charset_collate;
+feedback_table;
+
     file_log('SQL Driver Tabe', $create_drivers_table);
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($create_users_table);
     dbDelta($create_drivers_table);
     dbDelta($create_orders_table);
+    dbDelta($create_feedback_table);
   }
 
   private static function addPickupPage()
@@ -117,6 +140,25 @@ orders_table;
       update_post_meta($postID, '_wp_page_template', 'template-pickup-page.php');
 
       update_option('nucssa_pickup_service_page_id', $postID);
+    }
+  }
+
+  private static function addPickupFeedbackPage() {
+    $page_slug = 'pickup-feedback';
+    $page_title = '迎新生接机意见反馈';
+    $page_check = \get_page_by_path($page_slug);
+    if (!isset($page_check->ID)) {
+      $postID = wp_insert_post([
+        'post_type' => 'page',
+        'post_title' => $page_title,
+        'post_status' => 'publish',
+        'post_author' => 1,
+        'comment_status' => 'closed',
+        'post_name' => $page_slug,
+      ]);
+      update_post_meta($postID, '_wp_page_template', 'template-pickup-feedback-page.php');
+
+      update_option('nucssa_pickup_service_feedback_page_id', $postID);
     }
   }
 

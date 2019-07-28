@@ -14,12 +14,17 @@ const mix = require('laravel-mix');
 /*  eslint-disable indent */
 mix.sass('assets/scss/admin-pickup-page.scss', 'public/css')
     .sass('assets/scss/pickup-page.scss', 'public/css')
+    .sass('assets/scss/feedback-page.scss', 'public/css')
     .sass('assets/scss/admin-global.scss', 'public/css')
     .scripts([
       'node_modules/materialize-css/dist/js/materialize.min.js',
       'assets/js/all.js'
       ], 'public/js/all.js')
-    .react('assets/js/app.js', 'public/js/app.v5.js')
+    .scripts([
+      'node_modules/materialize-css/dist/js/materialize.min.js',
+      'assets/js/feedback-page.js'
+      ], 'public/js/feedback-page.js')
+    .react('assets/js/app.js', 'public/js/app.v10.js')
     .js('assets/js/admin.js', 'public/js')
     .copyDirectory('assets/images/', 'public/images/')
     .browserSync({
