@@ -12,6 +12,7 @@ export default class DriverApplicationPage extends Component {
         wechat: '',
         phone: '',
         role: '',
+        email: '',
       },
       isDriver: false,
     };
@@ -33,7 +34,7 @@ export default class DriverApplicationPage extends Component {
       let resp = await axios.get(userEndpoint);
       const user = resp.data.data.user;
       const isDriver = user.role === 'DRIVER' || user.role === 'PENDING_DRIVER';
-      console.log('user', user);
+      // console.log('user', user);
       this.setState({user, isDriver});
 
       if (isDriver) {
@@ -57,7 +58,7 @@ export default class DriverApplicationPage extends Component {
   submit(e) {
     e.preventDefault();
 
-    const { wechat, phone } = this.state.user;
+    const { wechat, phone, email } = this.state.user;
     const name = this.refName.current.value;
     const carrier = this.refCarrier.current.value;
     const password1 = this.refPassword1.current.value;
@@ -73,7 +74,7 @@ export default class DriverApplicationPage extends Component {
     }
 
     const userData = {
-      wechat, name, phone, carrier, password: password1
+      wechat, name, email, phone, carrier, password: password1
     };
 
     const errHandler = err => {
@@ -142,6 +143,13 @@ export default class DriverApplicationPage extends Component {
                   <i className="material-icons prefix">account_circle</i>
                   <input ref={this.refName} type="text" id="edit-name" name="user[name]" className="validate" required />
                     <label htmlFor="edit-name">姓名</label>
+                </div>
+              </div>
+              <div className="row">
+                <div className="input-field col s12">
+                  <i className="material-icons prefix">email</i>
+                  <input type="email" id="edit-email" name="user[email]" className="validate" value={this.state.user.email} onChange={e => this.setState({user: {...this.user, email: e.currentTarget.value}})} required />
+                    <label htmlFor="edit-email">Email</label>
                 </div>
               </div>
               <div className="row">

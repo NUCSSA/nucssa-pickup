@@ -59,6 +59,7 @@ function update($email = NULL) {
   if ($user) {
     $wechat = sanitize_text_field($data['wechat']);
     $name = sanitize_text_field($data['name']);
+    $email = sanitize_text_field($data['email']);
     $phone = sanitize_text_field($data['phone']);
     $carrier = sanitize_text_field($data['carrier']);
     $passwd_hashed = \password_hash(sanitize_text_field($data['password']), PASSWORD_DEFAULT);
@@ -67,6 +68,7 @@ function update($email = NULL) {
       [
         'wechat' => $wechat,
         'name' => $name,
+        'email' => $email,
         'phone' => $phone,
         'carrier' => $carrier,
         'passwd_hashed' => $passwd_hashed,
@@ -79,6 +81,7 @@ function update($email = NULL) {
     );
     $_SESSION['user']->wechat = $wechat;
     $_SESSION['user']->name = $name;
+    $_SESSION['user']->email = $email;
     $_SESSION['user']->phone = $phone;
     $_SESSION['user']->carrier = $carrier;
     $_SESSION['user']->passwd_hashed = $passwd_hashed;
