@@ -252,7 +252,7 @@ export default class CreateEditOrderPage extends Component {
                 <div className="input-field col s12">
                   <i className="material-icons prefix">message</i>
                   <textarea ref={this.refNote} id="note" className="materialize-textarea" data-length="500"></textarea>
-                  <label htmlFor="note">备注信息(给司机)</label>
+                  <label htmlFor="note">备注信息(给司机) - 请注明箱子大小 谢谢~</label>
                 </div>
               </div>
               <div className="row center">
