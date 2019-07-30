@@ -41,7 +41,9 @@ export default class CreateEditOrderPage extends Component {
   componentDidMount() {
     const datepickerInstance = M.Datepicker.init(this.refArrivalDate.current, {
       defaultDate: this.isEditing ? new Date(this.order.arrival_datetime) : null,
-      setDefaultDate: this.isEditing
+      setDefaultDate: this.isEditing,
+      minDate: new Date(2019, 7, 1),
+      maxDate: new Date(2019, 8, 1),
     });
     const timepickerInstance = M.Timepicker.init(this.refArrivalTime.current, {
       defaultTime: this.isEditing ? moment(this.order.arrival_datetime).format('hh:mm A') : 'now',
@@ -160,6 +162,7 @@ export default class CreateEditOrderPage extends Component {
             <div className="card-content white-text">
               <span className="card-title">请注意:</span>
               <p>我们的接机服务仅为新生提供，需要提交录取通知书作为新生证明!</p>
+              <p>活动时间: 8/1-9/1</p>
             </div>
           </div>
           <div className="col s12">
