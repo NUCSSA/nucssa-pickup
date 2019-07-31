@@ -9,3 +9,4 @@ log.txt
 .idea/
 mix-manifest.json
 TODO.md
+lib/inc/mail-service/templates/cache

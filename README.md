@@ -11,11 +11,11 @@
 
 #### 司机抢单
 <img src="README/抢单菜单.png" width="300" />
-![](README/抢单页面.png)
+<img src="README/抢单页面.png" alt="抢单页面" />
 
 
 #### 司机查看自己抢到的订单
-![抢到的单](README/view_managed_orders.gif)
+<img src="README/司机查看自己抢到的单.gif" alt="抢到的单" width="600" />
 
 #### 其他截图
 <img alt="新生订单完成提交" src="README/finish_ordering.png" width="300" />
