@@ -286,7 +286,9 @@ class MailService {
 
   private static function initTwig() {
     $loader = new \Twig\Loader\FilesystemLoader(dirname(__FILE__) . '/templates');
-    $twig = new \Twig\Environment($loader);
+    $twig = new \Twig\Environment($loader, [
+      'cache' => NUCSSA_PICKUP_DIR_PATH.'lib/inc/mail-service/templates/cache',
+    ]);
     return $twig;
   }
 }
