@@ -162,6 +162,7 @@ export default class CreateEditOrderPage extends Component {
             <div className="card-content white-text">
               <span className="card-title">请注意:</span>
               <p>我们的接机服务仅为新生提供，需要提交录取通知书作为新生证明!</p>
+              <p>每单仅限一名新生，若有其他新生同行，请所有人单独下单</p>
               <p>活动时间: 8/1-9/1</p>
             </div>
           </div>
@@ -234,7 +235,7 @@ export default class CreateEditOrderPage extends Component {
                 <div className="input-field col s12">
                   <i className="material-icons prefix">people</i>
                   <input ref={this.refCompanionCount} type="number" id="companion-count" className="validate" defaultValue="0" required />
-                  <label htmlFor="companion-count">随行家属人数</label>
+                  <label htmlFor="companion-count">随行亲属人数</label>
                 </div>
               </div>
               <div className="row">
