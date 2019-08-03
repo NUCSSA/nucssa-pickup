@@ -6,8 +6,26 @@
 .wrap {
   margin: 10px 20px;
 
+  p.search-box {
+    position: static !important;
+  }
+
   table {
     .row-action.decline {color: $nucssa-red;}
     img.admin-pickup-entry-image {width: 50px; height: 50px;}
+  }
+}
+
+#wpbody-content {
+  display: flex;
+  flex-direction: column;
+
+  height: calc( 100vh - 46px ); // 46px on xs screen
+  @media screen and (min-width: 783px) {
+    height: calc( 100vh - 32px ); // 46px on xs screen
+  }
+
+  .wrap {
+    flex-grow: 1;
   }
 }

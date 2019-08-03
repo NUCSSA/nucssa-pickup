@@ -1,6 +1,16 @@
 @import '~materialize-css/dist/css/materialize.min';
 @import 'footer';
 
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  .container {
+    flex-grow: 1;
+  }
+}
+
 table {
   tr { border: none;}
 }
