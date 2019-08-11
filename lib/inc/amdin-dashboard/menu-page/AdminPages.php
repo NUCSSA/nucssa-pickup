@@ -3,8 +3,9 @@ namespace nucssa_pickup\admin_dashboard\menu_page;
 
 use nucssa_pickup\admin_dashboard\DriversListTable;
 use nucssa_pickup\admin_dashboard\OrdersListTable;
+use nucssa_pickup\admin_dashboard\FeedbackListTable;
 
-class AdminMenu {
+class AdminPages {
   public static function init() {
     self::addMenuPage();
     self::removeWpFooter();
@@ -18,6 +19,9 @@ class AdminMenu {
     });
     add_submenu_page('admin-menu-page-nucssa-pickup', '接机|新生订单审核', '订单审核', 'manage_pickups', 'admin-menu-page-nucssa-pickup__order-review', function() {
       self::renderOrderReviewPage();
+    });
+    add_submenu_page('admin-menu-page-nucssa-pickup', '接机|用户反馈', '用户反馈', 'read', 'admin-menu-page-nucssa-pickup__user-feedback', function() {
+      self::renderUserFeedbackPage();
     });
   }
 
@@ -83,6 +87,18 @@ class AdminMenu {
       </form>
     </div>
 
+    <?php
+    echo self::footerBranding();
+  }
+
+  private static function renderUserFeedbackPage() {
+    $feedbackListTable = new FeedbackListTable();
+    $feedbackListTable->prepare_items();
+    ?>
+    <div class="wrap nucssa-pickup-feedback-page">
+      <h2>用户反馈</h2>
+      <?php $feedbackListTable->display(); ?>
+    </div>
     <?php
     echo self::footerBranding();
   }
