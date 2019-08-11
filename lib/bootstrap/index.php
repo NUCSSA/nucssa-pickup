@@ -6,7 +6,7 @@ use nucssa_pickup\Cron;
 // add_action('plugins_loaded', function() {
 // });
 
-add_action('admin_menu', ['nucssa_pickup\admin_dashboard\menu_page\AdminMenu', 'init']);
+add_action('admin_menu', ['nucssa_pickup\admin_dashboard\menu_page\AdminPages', 'init']);
 add_action('admin_enqueue_scripts', ['nucssa_pickup\AdminScripts', 'init']);
 add_action('rest_api_init', ['nucssa_pickup\RESTful', 'init']);
 register_activation_hook(NUCSSA_PICKUP_PLUGIN_FILENAME, ['nucssa_pickup\Activation', 'init']);

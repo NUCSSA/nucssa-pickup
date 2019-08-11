@@ -24,12 +24,13 @@ class AdminScripts
     if (!self::isPickupMenuPages($hook)) return;
 
     $handle = 'nucssa_pickup_amdin_script';
+    $version = WP_DEBUG ? time() : false;
     // load core script
     wp_enqueue_script(
       $handle,
       NUCSSA_PICKUP_DIR_URL . 'public/js/admin.js',
       [], // deps
-      false, // version
+      $version, // version
       true // in_footer?
     );
 
@@ -38,22 +39,24 @@ class AdminScripts
   private static function loadPickupPageStyles($hook) {
     if (!self::isPickupMenuPages($hook)) return;
 
+    $version = WP_DEBUG ? time() : 'v1.1';
     wp_enqueue_style(
       'nucssa_pickup_admin_page_style',
       NUCSSA_PICKUP_DIR_URL . 'public/css/admin-pickup-page.css',
       [], // deps
-      false,   // version
+      $version,
       'all'    // media
     );
   }
 
   private static function loadAdminGlobalStyles() {
     // Global Styles
+    $version = WP_DEBUG ? time() : false;
     wp_enqueue_style(
       'nucssa_pickup_admin_global_style',
       NUCSSA_PICKUP_DIR_URL . 'public/css/admin-global.css',
       [], // deps
-      false,   // version
+      $version,
       'all'    // media
     );
   }
@@ -67,6 +70,6 @@ class AdminScripts
   }
 
   private static function isPickupMenuPages($hook) {
-    return $hook === 'toplevel_page_admin-menu-page-nucssa-pickup' || strpos($hook, 'pickup__order-review') !== false;
+    return strpos($hook, 'admin-menu-page-nucssa-pickup') !== false;
   }
 }
