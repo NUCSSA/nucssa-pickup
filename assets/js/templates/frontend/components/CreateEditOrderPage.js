@@ -32,7 +32,7 @@ export default class CreateEditOrderPage extends Component {
     if (this.props.location.state && this.props.location.state.order) {
       this.isEditing = true;
       this.order = this.props.location.state.order;
-      console.log('order', this.order);
+      // console.log('order', this.order);
     } else {
       this.isEditing = false;
     }
