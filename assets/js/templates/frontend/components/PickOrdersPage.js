@@ -76,7 +76,7 @@ export default class DriverApplicationPage extends Component {
             <tbody>
               {
                 this.state.orders.map(order => (
-                  <tr key={order.id}>
+                  <tr key={order.id} style={ moment(order.arrival_datetime).diff(moment(), 'days') < 5 ? {color: 'red', fontWeight: 500} : null }>
                     <td>{moment(order.arrival_datetime).format(datetimeDisplayFormat)}</td>
                     <td>{order.companion_count}</td>
                     <td>{order.luggage_count}</td>
