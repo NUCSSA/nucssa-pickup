@@ -34,22 +34,12 @@ class AdminPages {
   private static function renderOrderReviewPage(){
     $ordersListTable = new OrdersListTable();
     $ordersListTable->prepare_items();
-    $plugin_page_slug = $_GET['page'];
-    $approval_status = $_GET['approval_status'] ?? '';
     ?>
     <div class="wrap">
       <h2>订单审核</h2>
-      <ul class="subsubsub">
-        <li class="pending"><a class="<?php echo empty($approval_status) ? 'current' : ''; ?>" href="<?php echo "admin.php?page=$plugin_page_slug" ?>">待审核</a></li>
-        <li class="approved"><a class="<?php echo $approval_status == 'approved' ? 'current' : ''; ?>" href="<?php echo "admin.php?page=$plugin_page_slug&approval_status=approved" ?>">已通过</a></li>
-        <li class="failed"><a class="<?php echo $approval_status == 'failed' ? 'current' : ''; ?>" href="<?php echo "admin.php?page=$plugin_page_slug&approval_status=failed" ?>">被拒的</a></li>
-        <li class="all"><a class="<?php echo $approval_status == 'all' ? 'current' : ''; ?>" href="<?php echo "admin.php?page=$plugin_page_slug&approval_status=all" ?>">所有订单</a></li>
-      </ul>
+      <?php $ordersListTable->views(); ?>
       <form method="post">
-        <p class="search-box">
-          <input type="search" name="s" value="<?php echo $_REQUEST['s'] ?? '' ?>" />
-          <input type="submit" class="button" value="搜索乘客订单" />
-        </p>
+        <?php $ordersListTable->search_box('搜索乘客订单', 'order'); ?>
         <input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
         <?php $ordersListTable->display(); ?>
       </form>
@@ -66,22 +56,12 @@ class AdminPages {
      */
     $driversListTable = new DriversListTable();
     $driversListTable->prepare_items();
-    $plugin_page_slug = $_GET['page'];
-    $approval_status = $_GET['approval_status'] ?? '';
     ?>
     <div class="wrap">
       <h2>司机审核</h2>
-      <ul class="subsubsub">
-        <li class="pending"><a class="<?php echo empty($approval_status) ? 'current' : ''; ?>" href="<?php echo "admin.php?page=$plugin_page_slug" ?>">待审核</a></li>
-        <li class="approved"><a class="<?php echo $approval_status == 'approved' ? 'current' : ''; ?>" href="<?php echo "admin.php?page=$plugin_page_slug&approval_status=approved" ?>">已通过</a></li>
-        <li class="failed"><a class="<?php echo $approval_status == 'failed' ? 'current' : ''; ?>" href="<?php echo "admin.php?page=$plugin_page_slug&approval_status=failed" ?>">被拒的</a></li>
-        <li class="all"><a class="<?php echo $approval_status == 'all' ? 'current' : ''; ?>" href="<?php echo "admin.php?page=$plugin_page_slug&approval_status=all" ?>">所有司机</a></li>
-      </ul>
+      <?php $driversListTable->views(); ?>
       <form method="post">
-        <p class="search-box">
-          <input type="search" name="s" value="<?php echo $_REQUEST['s'] ?? '' ?>" />
-          <input type="submit" class="button" value="Search Drivers" />
-        </p>
+        <?php $driversListTable->search_box('搜索司机', 'driver'); ?>
         <input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
         <?php $driversListTable->display(); ?>
       </form>

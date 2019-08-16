@@ -786,6 +786,8 @@ class WP_List_Table {
 		$current_url = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
 
 		$current_url = remove_query_arg( $removable_query_args, $current_url );
+		$addtional_query_args_for_pagination_link = $this->addtional_query_args_for_pagination_link();
+		$current_url = add_query_arg($addtional_query_args_for_pagination_link, $current_url );
 
 		$page_links = array();
 
@@ -1384,5 +1386,9 @@ class WP_List_Table {
 		);
 
 		printf( "<script type='text/javascript'>list_args = %s;</script>\n", wp_json_encode( $args ) );
+	}
+
+	protected function addtional_query_args_for_pagination_link() {
+		return [];
 	}
 }
