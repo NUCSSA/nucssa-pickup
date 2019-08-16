@@ -1,8 +1,8 @@
 <div class="row">
   <div class="col s12">
     <ul class="tabs">
-      <li class="tab col s2"><a href="#1">登录</a></li>
-      <li class="tab col s2"><a href="#2" <?php if (!empty($_SESSION['register-error'])) echo 'class="active"'; ?> >注册</a></li>
+      <li class="tab col s6"><a href="#1">登录</a></li>
+      <li class="tab col s6"><a href="#2" <?php if (!empty($_SESSION['register-error'])) echo 'class="active"'; ?> >注册</a></li>
     </ul>
   </div>
   <div id="1" class="col s12">

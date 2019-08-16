@@ -333,6 +333,10 @@ export default class HomePage extends Component {
             <Link to="/edit-user-info" className="btn-floating yellow darken-1"><i className="material-icons">edit</i></Link>
             <a className="btn-floating mobile-fab-tip">更新个人信息</a>
           </li>
+          <li>
+            <a className="btn-floating blue-grey" rel="nofollow" href="/pickup?auth=logout"><i className="material-icons">exit_to_app</i></a>
+            <a className="btn-floating mobile-fab-tip">Log Out</a>
+          </li>
         </ul>
       </div>
     );
