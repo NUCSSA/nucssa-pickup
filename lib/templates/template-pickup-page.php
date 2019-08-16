@@ -6,7 +6,6 @@
 include_once('template-pickup-page-utils.php');
 
 use function nucssa_pickup\templates\template_pickup_page_utils\is_user_logged_in;
-use function nucssa_core\utils\debug\file_log;
 use function nucssa_pickup\templates\template_pickup_page_utils\process_submission_data;
 use function nucssa_pickup\templates\template_pickup_page_utils\insert_local_js;
 use function nucssa_pickup\templates\template_pickup_page_utils\enableBrowserSyncOnDebugMode;
@@ -14,20 +13,20 @@ use function nucssa_pickup\templates\template_pickup_page_utils\handle_json_requ
 
 session_start();
 
+// Process logout
+if (isset($_GET['auth']) && $_GET['auth'] == 'logout') {
+  session_unset();
+  session_destroy();
+  $redirect = remove_query_arg( 'auth' );
+  wp_redirect( $redirect );
+}
+
 if (isset($_GET['json'])) {
   handle_json_request();
   exit;
 }
 
 process_submission_data(); // login and registration form post
-
-// file_log('>>>');
-// file_log($_SERVER);
-// file_log($_SESSION['user']);
-// file_log($_FILES);
-// file_log($_POST);
-// file_log($_GET);
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -61,7 +60,7 @@ process_submission_data(); // login and registration form post
 </body>
 <script src="<?php echo NUCSSA_PICKUP_DIR_URL . 'public/js/all.js'; ?>"></script>
 <?php if (is_user_logged_in()) { ?>
-  <script src="<?php echo NUCSSA_PICKUP_DIR_URL . 'public/js/app.js?v1.0.1'; ?>"></script>
+  <script src="<?php echo NUCSSA_PICKUP_DIR_URL . 'public/js/app.js?v1.0.2'; ?>"></script>
 <?php } ?>
 <?php enableBrowserSyncOnDebugMode(); ?>
 
