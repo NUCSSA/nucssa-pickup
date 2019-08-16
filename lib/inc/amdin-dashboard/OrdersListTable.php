@@ -118,6 +118,25 @@ class OrdersListTable extends WP_List_Table {
     ];
   }
 
+  protected function get_views() {
+    $views_map = [
+      '' => '待审核',
+      'approved' => '已通过',
+      'failed' => '杯具了',
+      'all' => '所有订单',
+    ];
+    $query_arg_name = 'approval_status';
+    $current_view = $_REQUEST[$query_arg_name] ?? '';
+    $url_base = admin_url('admin.php?page='.$_REQUEST['page']);
+
+    foreach ($views_map as $query_arg_val => $display_name) {
+      $url = $query_arg_val == '' ? $url_base : add_query_arg( $query_arg_name, $query_arg_val, $url_base );
+      $class = $current_view == $query_arg_val ? 'class="current"' : '';
+      $views[$query_arg_val] = "<a href='$url' $class>$display_name</a>";
+    }
+    return $views;
+  }
+
   public function column_cb($item) {
     return "<input type='checkbox' name='order[]' value=$item->order_id />";
   }
@@ -172,6 +191,14 @@ class OrdersListTable extends WP_List_Table {
       case 0:
         return '杯具了';
     }
+  }
+
+  protected function addtional_query_args_for_pagination_link() {
+    $addtional_args = [];
+    if (isset($_REQUEST['s'])) {
+      $addtional_args['s'] = wp_unslash(trim($_REQUEST['s']));
+    }
+    return $addtional_args;
   }
 
   /****** HELPER METHODS *****/
