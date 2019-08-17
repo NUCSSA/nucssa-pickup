@@ -238,6 +238,25 @@ class MailService {
     }
   }
 
+  public static function resetPassword($name, $email) {
+    $twig = self::initTwig();
+    $context = self::baseContext();
+
+    global $wp;
+    $transient = md5(rand());
+    set_transient( "reset-by-$email", $transient, 2 * HOUR_IN_SECONDS );
+    $link = home_url('pickup');
+    $link = add_query_arg(
+      ['auth' => 'reset', 'user' => $email, 'transient' => $transient],
+      $link
+    );
+
+    $context['user_display_name'] = $name;
+    $context['reset_link'] = $link;
+    $message = $twig->render('reset-password.twig', $context);
+    wp_mail($email, 'Reset Password', $message);
+  }
+
   public static function testHTML() {
 
     $context = self::baseContext();
