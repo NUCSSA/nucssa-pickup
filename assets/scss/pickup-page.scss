@@ -8,6 +8,7 @@ body {
   flex-direction: column;
   height: 100vh;
 
+  > .container,
   #app {
     flex-grow: 1;
   }

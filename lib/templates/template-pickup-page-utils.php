@@ -1,5 +1,8 @@
 <?php
 namespace nucssa_pickup\templates\template_pickup_page_utils;
+
+use nucssa_pickup\mail_service\MailService;
+
 include_once(__DIR__.'/../inc/rest-endpoints/driver.php');
 include_once(__DIR__.'/../inc/rest-endpoints/user.php');
 include_once(__DIR__.'/../inc/rest-endpoints/order.php');
@@ -17,9 +20,107 @@ function is_user_logged_in(){
   return isset($_SESSION['user']);
 }
 
-function process_submission_data(){
-  if (empty($_POST)) return;
+function logout() {
+  session_unset();
+  session_destroy();
+  $redirect = remove_query_arg('auth');
+  wp_redirect($redirect);
+}
 
+function process_submission_data(){
+
+  // Process JSON REST Request
+  if (isset($_REQUEST['json'])) {
+    handle_json_request();
+    exit;
+  }
+  elseif (isset($_REQUEST['auth'])){
+    switch ($_REQUEST['auth']) {
+  // Process Logout Request
+      case 'logout':
+        logout();
+        break;
+
+      case 'reset':
+        if (isset($_GET['user'], $_GET['transient'], $_POST['password1'], $_POST['password2']) ){
+          // Process Password Resetting Form Submission
+          process_reset_resetting_form_submission();
+        } elseif (!empty($_POST)){
+          // Process Password Reset Request
+          process_reset_request();
+        }
+
+        break;
+
+  // Process Login | Registrtion Data
+      case 'login-reg':
+        if (!empty($_POST)) {
+          process_login_or_registration();
+        }
+        break;
+    }
+  }
+  return;
+}
+
+function process_reset_request() {
+  global $wpdb;
+  $email = $_POST['user']['email'];
+
+  // check existence of account
+  if ($user = $wpdb->get_row("SELECT * FROM pickup_service_users WHERE email = '$email'")) {
+    // create transient link and send to user
+    MailService::resetPassword($user->name, $email);
+
+    // show success message
+    $_SESSION['reset-message'] = ['success', 'Reset email is sent, please check your email.'];
+  } else {
+    // show error message
+    $_SESSION['reset-message'] = ['error', 'The email does not exist.'];
+  }
+}
+
+function process_reset_resetting_form_submission() {
+  ['password1' => $pass1, 'password2' => $pass2] = $_POST;
+  if ($pass1 !== $pass2) {
+    $_SESSION['reset-message'] = [
+      'error',
+      '两次输入不一致'
+    ];
+  } else {
+    $password_hashed = \password_hash(sanitize_text_field($pass1), PASSWORD_DEFAULT);
+    $email = $_GET['user'];
+
+    global $wpdb;
+    $wpdb->update(
+      'pickup_service_users',
+      ['passwd_hashed' => $password_hashed],
+      ['email' => $email]
+    );
+
+    $_SESSION['login-message'] = [
+      'success',
+      '重置成功'
+    ];
+
+    // Finally Clear Transient
+    delete_transient("reset-by-$email");
+
+    // Redirect to Login Screen
+    wp_redirect(home_url('pickup'));
+  }
+}
+
+/**
+ * @return {bool} returns true if the reset link is valid
+ */
+function verify_reset_link() {
+  ['user' => $email, 'transient' => $transient] = $_GET;
+  $saved_transient = get_transient( "reset-by-$email" );
+  return $saved_transient === $transient;
+}
+
+function process_login_or_registration() {
   global $wpdb;
   $submission_type = $_POST['form-for'];
 
@@ -29,9 +130,12 @@ function process_submission_data(){
     $user = $wpdb->get_row("SELECT * FROM pickup_service_users WHERE email = '$email'");
     if ($user && password_verify($password, $user->passwd_hashed)) {
       $_SESSION['user'] = $user;
-      $_SESSION['login-error'] = NULL;
+      $_SESSION['login-message'] = NULL;
+
+      $redirect = remove_query_arg('auth');
+      wp_redirect($redirect);
     } else {
-      $_SESSION['login-error'] = '账号密码错误, 请重试';
+      $_SESSION['login-message'] = ['error', '账号密码错误, 请重试'];
     }
   } else {
     // register new user
@@ -59,6 +163,8 @@ function process_submission_data(){
       do_action('np_user_created', $user);
       $_SESSION['user'] = $user;
     }
+    $redirect = remove_query_arg('auth');
+    wp_redirect($redirect);
   }
 }
 

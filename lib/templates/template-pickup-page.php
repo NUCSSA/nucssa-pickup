@@ -13,20 +13,9 @@ use function nucssa_pickup\templates\template_pickup_page_utils\handle_json_requ
 
 session_start();
 
-// Process logout
-if (isset($_GET['auth']) && $_GET['auth'] == 'logout') {
-  session_unset();
-  session_destroy();
-  $redirect = remove_query_arg( 'auth' );
-  wp_redirect( $redirect );
-}
-
-if (isset($_GET['json'])) {
-  handle_json_request();
-  exit;
-}
-
-process_submission_data(); // login and registration form post
+// Process all sorts of submission data:
+// Login/Registration, JSON Request, Password Reset, Logout
+process_submission_data();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -46,7 +35,17 @@ process_submission_data(); // login and registration form post
   </a>
   <?php
   if (!is_user_logged_in()) {
-    include('parts/login-registration-form.php');
+    if (isset($_GET['auth']) && $_GET['auth'] == 'reset') {
+      if (isset($_GET['user'], $_GET['transient'])) {
+        // Render Reset Password Resetting Form
+        include('parts/reset-password-resetting-form.php');
+      } else {
+        // Render Reset Password Request Form
+        include('parts/reset-password-request-form.php');
+      }
+    } else {
+      include('parts/login-registration-form.php');
+    }
   } else {
     insert_local_js();
     echo '<div id="app"></div>';
