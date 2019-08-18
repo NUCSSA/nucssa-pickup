@@ -59,15 +59,36 @@ export default class DriverApplicationPage extends Component {
     e.preventDefault();
 
     const { wechat, phone, email } = this.state.user;
-    const name = this.refName.current.value;
-    const carrier = this.refCarrier.current.value;
-    const password1 = this.refPassword1.current.value;
-    const password2 = this.refPassword2.current.value;
+    const name = this.refName.current.value.trim();
+    const carrier = this.refCarrier.current.value.trim();
+    const password1 = this.refPassword1.current.value.trim();
+    const password2 = this.refPassword2.current.value.trim();
+    const plateNumber = this.refVehiclePlateNumber.current.value.trim();
+    const makeModel = this.refVehicleMakeAndModel.current.value.trim();
+    const vehicleColor = this.refVehicleColor.current.value.trim();
 
+    let errors = [];
+    const validateRequired = ([displayName, val]) => {
+      if (!val) {
+        errors.push(`${displayName} is required`);
+      }
+    };
+    // Require wechat, email, name, password1 field.
+    [['WeChat', wechat], ['Email', email], ['姓名', name], ['Password', password1]].forEach(validateRequired);
     if (password1 !== password2) {
+      errors.push('Password Mismatch');
+    }
+    // Require phone and vehicle information if isDriver
+    if (this.state.isDriver) {
+      [['手机号', phone], ['手机运营商', carrier], ['车牌号', plateNumber], ['汽车型号', makeModel], ['汽车颜色', vehicleColor]].forEach(validateRequired);
+    }
+
+    if (errors.length > 0) {
       this.setState({
         message: <div className="card-panel red lighten-3 white-text center-align">
-          Password Mismatch!
+          {errors.map(
+            (val, index) => <p key={index}>{val}</p>
+          )}
         </div>
       });
       return;
@@ -104,9 +125,9 @@ export default class DriverApplicationPage extends Component {
     axios.put(userEndpoint, userData)
       .then(res => {
         if (this.state.isDriver) {
-          const vehiclePlateNumber = this.refVehiclePlateNumber.current.value;
-          const vehicleMakeAndModel = this.refVehicleMakeAndModel.current.value;
-          const vehicleColor = this.refVehicleColor.current.value;
+          const vehiclePlateNumber = this.refVehiclePlateNumber.current.value.trim();
+          const vehicleMakeAndModel = this.refVehicleMakeAndModel.current.value.trim();
+          const vehicleColor = this.refVehicleColor.current.value.trim();
           const driverData = {
             vehiclePlateNumber, vehicleMakeAndModel, vehicleColor
           };
@@ -134,7 +155,7 @@ export default class DriverApplicationPage extends Component {
               <div className="row">
                 <div className="input-field col s12">
                   <i className="icon icon-wechat material-icons prefix"></i>
-                  <input type="text" id="edit-wechat" name="user[wechat]" className="validate" value={this.state.user.wechat} onChange={(e) => this.setState({user : {...this.user, wechat: e.currentTarget.value}})} required />
+                  <input type="text" id="edit-wechat" name="user[wechat]" className="validate" value={this.state.user.wechat} onChange={(e) => this.setState({user : {...this.state.user, wechat: e.currentTarget.value.trim()}})} required />
                   <label htmlFor="edit-wechat">WeChat</label>
                 </div>
               </div>
@@ -148,14 +169,14 @@ export default class DriverApplicationPage extends Component {
               <div className="row">
                 <div className="input-field col s12">
                   <i className="material-icons prefix">email</i>
-                  <input type="email" id="edit-email" name="user[email]" className="validate" value={this.state.user.email} onChange={e => this.setState({user: {...this.user, email: e.currentTarget.value}})} required />
+                  <input type="email" id="edit-email" name="user[email]" className="validate" value={this.state.user.email} onChange={e => this.setState({user: {...this.state.user, email: e.currentTarget.value.trim()}})} required />
                     <label htmlFor="edit-email">Email</label>
                 </div>
               </div>
               <div className="row">
                 <div className="input-field col s6">
                   <i className="material-icons prefix">phone</i>
-                  <input type="number" id="edit-phone" name="user[phone]" value={this.state.user.phone} onChange={e => this.setState({user: {...this.state.user, phone: e.currentTarget.value}})} required={this.state.isDriver} />
+                  <input type="number" id="edit-phone" name="user[phone]" value={this.state.user.phone} onChange={e => this.setState({user: {...this.state.user, phone: e.currentTarget.value.trim()}})} required={this.state.isDriver} />
                   <label htmlFor="edit-phone">手机号{!this.state.isDriver && '(Optional)'}</label>
                 </div>
                 <div className="input-field col s6">
