@@ -65,12 +65,12 @@ function list_managed_orders() {
 }
 
 // GET
-// Return all unpicked orders
+// Return all unpicked future orders
 function list_pending_orders() {
   authenticate();
 
   global $wpdb;
-  $orders = $wpdb->get_results("SELECT * FROM pickup_service_orders WHERE driver is NULL AND approved = 1 ORDER BY arrival_datetime ASC");
+  $orders = $wpdb->get_results("SELECT * FROM pickup_service_orders WHERE driver is NULL AND approved = 1 AND arrival_datetime > NOW() ORDER BY arrival_datetime ASC");
   wp_send_json_success($orders);
 }
 
