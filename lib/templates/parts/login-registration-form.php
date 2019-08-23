@@ -11,12 +11,12 @@
     <div id="1" class="col s12 l6 offset-l3">
       <div id="message">
         <?php if (!empty($_SESSION['login-message'])) { ?>
-          <?php
-            [$type, $message] = $_SESSION['login-message'];
-            $color_class = $type == 'error' ? 'red lighten-3' : 'light-blue darken-1';
+        <?php
+          [$type, $message] = $_SESSION['login-message'];
+          $color_class = $type == 'error' ? 'red lighten-3' : 'light-blue darken-1';
           ?>
-          <div class="card-panel <?php echo $color_class; ?> white-text center-align"><?php echo $message; ?></div>
-          <?php unset($_SESSION['login-message']); ?>
+        <div class="card-panel <?php echo $color_class; ?> white-text center-align"><?php echo $message; ?></div>
+        <?php unset($_SESSION['login-message']); ?>
         <?php } ?>
       </div>
       <form class="login col s12" method="post" action="<?php echo home_url("$wp->request?auth=login-reg"); ?>">
@@ -52,7 +52,7 @@
   </div>
   <div class="row">
     <div id="2" class="col s12 l6 offset-l3">
-      <form class="register col s12" method="post">
+      <form class="register col s12" method="post" action="<?php echo home_url("$wp->request?auth=login-reg"); ?>">
         <div id="message">
           <?php if (!empty($_SESSION['register-error'])) { ?>
           <div class="card-panel red lighten-3 white-text center-align"><?php echo $_SESSION['register-error']; ?></div>
