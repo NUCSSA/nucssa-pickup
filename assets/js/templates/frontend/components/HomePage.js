@@ -6,6 +6,7 @@ import axios from 'axios';
 import { userEndpoint, orderEndpoint } from '../../../utils/constants';
 import moment from 'moment';
 import { datetimeDisplayFormat } from '../../../utils/utils';
+import ConfirmationModal from './ConfirmationModal';
 
 export default class HomePage extends Component {
   constructor() {
@@ -15,11 +16,17 @@ export default class HomePage extends Component {
       user: {role: 'PASSENGER'},
       managedOrders: [], // when this user is a driver
       hasOrderWaitingForApproval: false,
+      orderToDrop: null, // drop action from driver
+      orderToDelete: null, // delete action from passenger
     };
 
     this.refPageActionsFAB = React.createRef();
 
     this.ownOrdersSection = this.ownOrdersSection.bind(this);
+    this.dropOrder = this.dropOrder.bind(this);
+    this.deleteOrder = this.deleteOrder.bind(this);
+    this.confirmDropOrderModalText = this.confirmDropOrderModalText.bind(this);
+    this.confirmDeleteOrderModalText = this.confirmDeleteOrderModalText.bind(this);
   }
 
   async componentDidMount() {
@@ -55,6 +62,8 @@ export default class HomePage extends Component {
 
     }
 
+    // init Confirmaiton Modals
+    M.Modal.init(document.querySelectorAll('.modal'));
   }
 
   componentDidUpdate() {
@@ -63,6 +72,66 @@ export default class HomePage extends Component {
     // init Floating Action Button
     M.FloatingActionButton.init(this.refPageActionsFAB.current);
   }
+
+  dropOrder() {
+    axios.put(`${orderEndpoint}&driver_action=drop`, { order_id: this.state.orderToDrop.id })
+    .then(res => {
+      this.setState({ managedOrders: this.state.managedOrders.filter(o => o.id !== this.state.orderToDrop.id) });
+    });
+  }
+
+  confirmDropOrderModalText() {
+    if (!this.state.orderToDrop) return null;
+
+    const { passenger: { name: passengerName}, drop_off_address} = this.state.orderToDrop;
+    let style = {
+      passengerName: {
+        color: 'dodgerblue', fontWeight: 'bold',
+        textDecoration: 'underline',
+      },
+      address: {
+        color: 'dodgerblue', fontWeight: 'bold',
+        textDecoration: 'underline',
+      }
+    };
+    return (
+      <>
+        <p>You are about to drop the order of <span style={style.passengerName}>{passengerName}</span></p>
+        <p>with address <span style={style.address}>{drop_off_address}</span></p>
+      </>
+    );
+  }
+
+  confirmDeleteOrderModalText() {
+    if (!this.state.orderToDelete) return null;
+
+    const { drop_off_address } = this.state.orderToDelete;
+    let style = {
+      address: {
+        color: 'dodgerblue', fontWeight: 'bold',
+        textDecoration: 'underline',
+      }
+    };
+    return (
+      <>
+        <p>You are about to delete your order with address: </p>
+        <p><span style={style.address}>{drop_off_address}</span></p>
+        <p>If you want to change something of the order, you can <strong>Edit</strong> it instead of <strong>Delete</strong> it.</p>
+      </>
+    );
+  }
+
+  deleteOrder() {
+    axios.delete(`${orderEndpoint}&order_id=${this.state.orderToDelete.id}`)
+      .then((res) => {
+        // console.log('resp', res);
+        this.setState({ ownOrders: this.state.ownOrders.filter(o => o.id !== this.state.orderToDelete.id) });
+      })
+      .catch(err => {
+        // console.log('Error', err);
+      });
+  }
+
 
   ownOrdersSection() {
     // console.log('own orders', this.state.ownOrders);
@@ -126,16 +195,6 @@ export default class HomePage extends Component {
           </table>
         </div>
       `;
-      const deleteOrder = () => {
-        axios.delete(`${orderEndpoint}&order_id=${order.id}`)
-          .then((res) => {
-            // console.log('resp', res);
-            this.setState({ownOrders: this.state.ownOrders.filter(o => o.id !== order.id)});
-          })
-          .catch(err => {
-            // console.log('Error', err);
-          });
-      };
 
       const editOrder = () => {
         // console.log('order', order);
@@ -149,7 +208,7 @@ export default class HomePage extends Component {
         <>
           <i className="material-icons small blue-text tooltipped" data-position="left" data-tooltip={orderDetailCard}>info</i>
           <i className="material-icons small yellow-text text-darken-3" style={{cursor: 'pointer'}} onClick={editOrder}>edit</i>
-          <i className="material-icons small red-text text-lighten-1" style={{cursor: 'pointer'}} onClick={deleteOrder}>delete_forever</i>
+          <a data-target="modal-delete-own-order-confirmation" className="modal-trigger material-icons small red-text text-lighten-1" style={{cursor: 'pointer'}} onClick={() => this.setState({orderToDelete: order})}>delete_forever</a>
         </>
       );
     };
@@ -220,17 +279,11 @@ export default class HomePage extends Component {
           </table>
         </div>
       `;
-      const dropOrder = () => {
-        axios.put(`${orderEndpoint}&driver_action=drop`, { order_id: order.id })
-          .then(res => {
-            this.setState({managedOrders: this.state.managedOrders.filter(o => o.id !== order.id)});
-          });
-      }
       return (
         <>
           <a className="tooltipped" data-position="left" data-tooltip={orderDetailCard} style={{cursor: 'pointer'}}>订单详情</a>
           &nbsp;|&nbsp;
-          <a onClick={dropOrder} style={{cursor: 'pointer'}}>放弃订单</a>
+          <a data-target='modal-drop-confirmation' className="modal-trigger" onClick={() => this.setState({orderToDrop: order})} style={{cursor: 'pointer'}}>放弃</a>
         </>
       );
     };
@@ -368,6 +421,20 @@ export default class HomePage extends Component {
         { this.state.user.role == 'DRIVER' && this.managedOrdersSection() }
         { this.ownOrdersSection() }
         { this.actionsMenu() }
+        <ConfirmationModal
+          modalID="modal-drop-confirmation"
+          body={this.confirmDropOrderModalText()}
+          abortText="Keep"
+          confirmText="Confirm Dropping"
+          confirmAction={this.dropOrder}
+        />
+        <ConfirmationModal
+          modalID="modal-delete-own-order-confirmation"
+          body={this.confirmDeleteOrderModalText()}
+          abortText="Keep"
+          confirmText="Confirm Deletion"
+          confirmAction={this.deleteOrder}
+        />
       </main>
     );
   }
