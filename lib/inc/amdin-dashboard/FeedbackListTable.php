@@ -94,9 +94,6 @@ class FeedbackListTable extends WP_List_Table
   {
     $passenger_feedback = json_decode($item->passenger_feedback);
     ?>
-    <div class="contact">
-      <?php echo "$item->passenger_name | $item->passenger_wechat" ?>
-    </div>
     <?php if ($passenger_feedback) { ?>
       <div class="feedback">
         <span class="label">对司机评价</span><span class="content"><?php echo $passenger_feedback->driver_rating ?></span>
