@@ -15,7 +15,7 @@ class MailService {
     $mailer->Password = SENDGRID_API_KEY;
     $mailer->SMTPSecure = 'TLS';
     $mailer->From = 'NoReply@nucssa.org';
-    $mailer->FromName = 'NUCSSA接机';
+    $mailer->FromName = 'NUCSSA';
   }
 
   public static function enalbeHTMLEmail($content_type) {
