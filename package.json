@@ -30,7 +30,7 @@
     "browser-sync": "^2.26.7",
     "browser-sync-webpack-plugin": "^2.2.2",
     "cross-env": "^5.2.1",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "laravel-mix": "^4.1.4",
     "materialize-css": "^1.0.0",
     "redux-devtools-extension": "^2.13.8",
