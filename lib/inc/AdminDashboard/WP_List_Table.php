@@ -1,5 +1,5 @@
 <?php
-namespace nucssa_pickup\admin_dashboard;
+namespace nucssa_pickup\AdminDashboard;
 
 class WP_List_Table {
 

@@ -1,12 +1,18 @@
 {
-    "require": {
-        "overtrue/wechat": "^4.1",
-        "timber/timber": "^1.10"
-    },
-    "autoload": {
-        "files": [],
-        "psr-4": {
-            "":["lib/"]
-        }
+  "require": {
+    "overtrue/wechat": "^4.1",
+    "timber/timber": "^1.10"
+  },
+  "autoload": {
+    "files": [],
+    "psr-4": {
+      "nucssa_pickup\\": "lib/inc/"
     }
+  },
+  "config": {
+    "allow-plugins": {
+      "easywechat-composer/easywechat-composer": true,
+      "composer/installers": true
+    }
+  }
 }

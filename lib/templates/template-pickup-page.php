@@ -1,6 +1,6 @@
 <?php
 
-// echo \nucssa_pickup\mail_service\MailService::testHTML();
+// echo \nucssa_pickup\MailService\MailService::testHTML();
 // exit;
 
 include_once('template-pickup-page-utils.php');

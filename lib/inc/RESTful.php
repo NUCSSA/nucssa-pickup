@@ -3,7 +3,6 @@ namespace nucssa_pickup;
 
 use EasyWeChat\Factory;
 use EasyWeChat\Kernel\Messages\Message;
-use function nucssa_core\utils\debug\file_log;
 
 class RESTful {
 
@@ -60,11 +59,6 @@ class RESTful {
       [
         'methods' => ['GET', 'POST'],
         'callback' => function () {
-          file_log('>>>');
-          file_log($_SESSION['user']);
-          file_log($_FILES);
-          file_log($_POST);
-          file_log($_GET);
         }
       ]
     ]);

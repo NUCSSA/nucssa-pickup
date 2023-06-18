@@ -2,8 +2,6 @@
 
 namespace nucssa_pickup;
 
-use function nucssa_core\utils\debug\file_log;
-
 /**
  * Things to do on plugin activation
  */
@@ -115,7 +113,6 @@ orders_table;
         ) $charset_collate;
 feedback_table;
 
-    file_log('SQL Driver Tabe', $create_drivers_table);
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($create_users_table);
     dbDelta($create_drivers_table);

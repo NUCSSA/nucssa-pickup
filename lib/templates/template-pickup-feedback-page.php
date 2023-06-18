@@ -3,7 +3,7 @@ include_once('template-pickup-page-utils.php');
 include_once('template-pickup-feedback-page-utils.php');
 
 use function nucssa_pickup\templates\template_pickup_page_utils\enableBrowserSyncOnDebugMode;
-use function nucssa_pickup\templates\template_pickup_feedback_page_utils\processFeedbackSubmission;
+use function nucssa_pickup\templates\utils\processFeedbackSubmission;
 
 $survey_submitted = false;
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

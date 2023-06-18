@@ -1,13 +1,12 @@
 <?php
 namespace nucssa_pickup\templates\template_pickup_page_utils;
 
-use nucssa_pickup\mail_service\MailService;
+use nucssa_pickup\MailService\MailService;
 
 include_once(__DIR__.'/../inc/rest-endpoints/driver.php');
 include_once(__DIR__.'/../inc/rest-endpoints/user.php');
 include_once(__DIR__.'/../inc/rest-endpoints/order.php');
 
-use function nucssa_core\utils\debug\file_log;
 use function nucssa_pickup\rest_endpoints\driver\{create as create_driver, show as show_driver, update as update_driver};
 use function nucssa_pickup\rest_endpoints\user\{show as show_user, update as update_user};
 use function nucssa_pickup\rest_endpoints\order\{

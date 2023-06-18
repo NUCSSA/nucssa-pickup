@@ -1,5 +1,6 @@
 <?php
-namespace nucssa_pickup\admin_dashboard;
+
+namespace nucssa_pickup\AdminDashboard;
 
 class DriversListTable extends WP_List_Table {
   public function __construct() {
@@ -84,8 +85,6 @@ class DriversListTable extends WP_List_Table {
       'total_pages' => $total_pages,
       'per_page' => $per_page
     ]);
-
-    // file_log('current action', $this->current_action);
   }
 
   /********** SET UP TABLE LAYOUT **********/

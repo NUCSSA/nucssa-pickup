@@ -1,7 +1,6 @@
 <?php
-namespace nucssa_pickup\admin_dashboard;
 
-use function nucssa_core\utils\debug\file_log;
+namespace nucssa_pickup\AdminDashboard;
 
 class OrdersListTable extends WP_List_Table {
   public function __construct() {
@@ -87,7 +86,6 @@ class OrdersListTable extends WP_List_Table {
       'per_page' => $per_page
     ]);
 
-    // file_log('current action', $this->current_action);
   }
 
   /********** SET UP TABLE LAYOUT **********/

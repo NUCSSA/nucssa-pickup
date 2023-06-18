@@ -1,9 +1,9 @@
 <?php
-namespace nucssa_pickup\admin_dashboard\menu_page;
+namespace nucssa_pickup\AdminDashboard\MenuPage;
 
-use nucssa_pickup\admin_dashboard\DriversListTable;
-use nucssa_pickup\admin_dashboard\OrdersListTable;
-use nucssa_pickup\admin_dashboard\FeedbackListTable;
+use nucssa_pickup\AdminDashboard\DriversListTable;
+use nucssa_pickup\AdminDashboard\OrdersListTable;
+use nucssa_pickup\AdminDashboard\FeedbackListTable;
 
 class AdminPages {
   public static function init() {

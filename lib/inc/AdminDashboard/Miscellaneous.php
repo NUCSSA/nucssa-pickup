@@ -1,8 +1,6 @@
 <?php
 
-namespace nucssa_pickup\admin_dashboard;
-
-use function nucssa_core\utils\debug\file_log;
+namespace nucssa_pickup\AdminDashboard;
 
 class Miscellaneous
 {

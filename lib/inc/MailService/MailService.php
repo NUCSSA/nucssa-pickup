@@ -1,8 +1,7 @@
 <?php
-namespace nucssa_pickup\mail_service;
+namespace nucssa_pickup\MailService;
 
 use Timber\Timber;
-use function nucssa_core\utils\debug\file_log;
 use stdClass;
 
 class MailService {

@@ -1,8 +1,7 @@
 <?php
 
-namespace nucssa_pickup\rest_endpoints\order;
+namespace nucssa_pickup\RestEndpoints\order;
 
-use function nucssa_core\utils\debug\file_log;
 use function nucssa_pickup\templates\template_pickup_page_utils\authenticate;
 
 // GET
@@ -23,15 +22,11 @@ function list_own_orders() {
   global $wpdb;
   $passenger = $_SESSION['user'];
   $orders = $wpdb->get_results("SELECT * FROM pickup_service_orders WHERE passenger = $passenger->id ORDER BY arrival_datetime ASC");
-  // file_log('orders', $orders);
   // preload driver and passenger information
   foreach ($orders as $order) {
-    // file_log('driver_id ', $order->driver);
-
     $driver = $wpdb->get_row("SELECT * FROM pickup_service_drivers d, pickup_service_users u WHERE u.id = d.user_id AND u.id = $order->driver");
     $order->driver = $driver;
     $order->passenger = $passenger;
-    // file_log('order', $order);
   }
 
   // clean up buffer and send response
@@ -52,7 +47,6 @@ function list_managed_orders() {
   $driver->vehicle_make_and_model = $driver_vehicle_info->vehicle_make_and_model;
   $driver->vehicle_color = $driver_vehicle_info->vehicle_color;
   foreach ($orders as $order) {
-    // file_log('passenger_id ', $order->passenger);
     $passenger = $wpdb->get_row("SELECT * FROM pickup_service_users WHERE id = $order->passenger");
 
     $order->driver = $driver;
@@ -122,7 +116,6 @@ function driver_drop_order() {
   $data = json_decode(file_get_contents('php://input'), true);
   $order_id = $data['order_id'];
 
-  // file_log('order_id', $order_id);
   $wpdb->update(
     'pickup_service_orders',
     [

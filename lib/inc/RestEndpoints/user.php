@@ -1,8 +1,7 @@
 <?php
 
-namespace nucssa_pickup\rest_endpoints\user;
+namespace nucssa_pickup\RestEndpoints\user;
 
-use function nucssa_core\utils\debug\file_log;
 use function nucssa_pickup\templates\template_pickup_page_utils\authenticate;
 
 /**
@@ -15,7 +14,6 @@ function show($email = NULL) {
   global $wpdb;
   $user = $_SESSION['user'];
   $term = 'Fall 2019';
-  // file_log($user);
   if ($email) {
     $user = $wpdb->get_row("SELECT * FROM pickup_service_users WHERE email = '$email'");
   }
@@ -23,7 +21,6 @@ function show($email = NULL) {
   if ($user) {
     $driver = $wpdb->get_row("SELECT * FROM pickup_service_drivers WHERE user_id = $user->id");
     ob_clean(); // clear db error ouput in buffer
-    file_log('driver', $driver);
     if ($driver) {
       if ($driver->certified === NULL) {
         $user -> role = 'PENDING_DRIVER';
@@ -35,7 +32,6 @@ function show($email = NULL) {
     } else {
       $user -> role = 'PASSENGER';
     }
-    // file_log($user);
     wp_send_json_success(['user' => $user]);
   } else {
     wp_send_json_error(null, 401);

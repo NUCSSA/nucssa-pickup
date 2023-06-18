@@ -1,6 +1,6 @@
 <?php
 
-namespace nucssa_pickup\templates\template_pickup_feedback_page_utils;
+namespace nucssa_pickup\templates\utils;
 
 // POST
 function processFeedbackSubmission() {

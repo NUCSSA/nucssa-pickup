@@ -1,6 +1,6 @@
 <?php
 
-namespace nucssa_pickup\admin_dashboard;
+namespace nucssa_pickup\AdminDashboard;
 
 class FeedbackListTable extends WP_List_Table
 {
@@ -63,7 +63,6 @@ class FeedbackListTable extends WP_List_Table
       'per_page' => $per_page
     ]);
 
-    // file_log('current action', $this->current_action);
   }
 
   /********** SET UP TABLE LAYOUT **********/

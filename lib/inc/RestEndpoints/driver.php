@@ -1,6 +1,5 @@
 <?php
-namespace nucssa_pickup\rest_endpoints\driver;
-use function nucssa_core\utils\debug\file_log;
+namespace nucssa_pickup\RestEndpoints\driver;
 use function nucssa_pickup\templates\template_pickup_page_utils\authenticate;
 
 if (!function_exists('wp_handle_upload')) {
@@ -26,7 +25,6 @@ function create() {
   // override if exists
   $_FILES['huskycard']['name'] = $user->email.'-'. $_FILES['huskycard']['name'];
   $_FILES['license']['name'] = $user->email.'-'. $_FILES['license']['name'];
-  // file_log($_FILES['huskycard']);
   $overrides = [
     'test_form' => false,
     'unique_filename_callback' => function ($dir, $name, $ext) {return $name;}, // overwrite file
@@ -35,9 +33,6 @@ function create() {
   $moveLicense = wp_handle_upload($_FILES['license'], $overrides);
 
   if ($moveHuskycard && $moveLicense && !isset($moveHuskycard['error']) && !isset($moveLicense['error'])) {
-    // file_log('file uploaded');
-    // file_log($_SESSION['user']);
-    // file_log($_POST);
     global $wpdb;
     $wpdb->replace('pickup_service_drivers', [
       'user_id' => $user->id,
@@ -67,9 +62,7 @@ function create() {
     do_action('new_driver_application_submitted');
     wp_send_json_success();
   } else {
-    // file_log('failed: ' . $movefile['error']);
     // TODO: delete file if file already saved. (it's not persisted in db).
-    file_log('Error', $moveHuskycard['error'] ?? $moveLicense['error']);
     wp_send_json_error($moveHuskycard['error'] ?? $moveLicense['error'], 500);
   }
 }
